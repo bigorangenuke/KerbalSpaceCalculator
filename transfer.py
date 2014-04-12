@@ -1,10 +1,5 @@
 import ksp
-from enum import Enum
 import numpy as np
-
-
-class TransferType(Enum):
-    hohmann = 1
 
 class Transfer():
     def __init__(self,transferType = 1,**kwargs):
@@ -23,10 +18,7 @@ class Transfer():
         
         self.transferType = transferType
     
-        
-    
-    
-        
+
     def hohmannTransfer(self,startAltitude, endAltitude, **kwargs):
         parent = ksp.Body('kerbin')
         u = parent.gravitationalParameter

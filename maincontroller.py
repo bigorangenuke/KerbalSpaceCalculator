@@ -11,9 +11,10 @@ import numpy as np
 
 
 if __name__=='__main__':
-    
+    #Create application instance
     app = QtGui.QApplication([])
     mainWindow = gui.MainWindow()
+    
     gui.setupMainWindow(mainWindow)
     mainWindow.show()
     
