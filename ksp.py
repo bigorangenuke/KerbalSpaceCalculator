@@ -1,7 +1,7 @@
 import math as m
 import numpy as np
 import csv
-from enum import Enum
+
 
 
 #import sympy as sp
