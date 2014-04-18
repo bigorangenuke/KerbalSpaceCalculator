@@ -21,11 +21,8 @@ def cartesianToSpherical(coord):
     
     return [r,theta,phi]
 
-def polarToRectangular(coord):
-    r = coord[0]
-    theta = coord[1]
-    
-    return [r*cos(theta),r*sin(theta)]
+def polarToRectangular(r,theta):
+    return r*cos(theta),r*sin(theta)
 
 def rectangularToPolar(coord):
     x = coord[0]

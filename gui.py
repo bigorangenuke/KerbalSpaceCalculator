@@ -3,6 +3,7 @@ from PyQt4 import QtGui,QtCore
 import os
 import numpy as np
 from mplwidget import MplWidget as mpl
+import matplotlib.pyplot as plt
 from PyQt4 import uic
 dbg = True
 
@@ -31,33 +32,52 @@ class MainWindow(QtGui.QMainWindow):
         #build the .ui file
         uic.loadUi(path_to('mainwindow.ui'), self)
         self.hookupUI()
-        
+        #self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
     def hookupUI(self):
         if dbg: print('MainWindow.hookupUI()')
         
-class GraphDockWidget(QtGui.QDockWidget):
+class GraphWidget(QtGui.QWidget):
     def __init__(self,parent=None):
-        if dbg: print('GraphDockWidget.__init__()')
-        QtGui.QDockWidget.__init__(self,parent)
-        uic.loadUi(path_to('graphwidget.ui'),self)
+        if dbg: print('GraphWidget.__init__()')
+        QtGui.QWidget.__init__(self,parent)
+        uic.loadUi(path_to('graphwidget2.ui'),self)
         self.graph = self.mplwidget
         self.hookupUI()
+
+    def plotOrbit(self,x,y,z=None):
+        print('GraphWidget.plotOrbit')
+        fig = self.graph.canvas.fig
+        ax = fig.add_subplot(111,projection='3d')
+        if z:
+            ax.plot(x,y,z)
+        else:
+            ax.plot(x,y)
+    
+        
         
     def hookupUI(self):
-        if dbg: print('GraphDockWidget.hookupUI()')
+        if dbg: print('GraphWidget.hookupUI()')
     
-def setupMainWindow(mw = None):
-    
-    graphDockWidget = GraphDockWidget()
-    mw.addDockWidget(QtCore.Qt.LeftDockWidgetArea,graphDockWidget)
 
-           
+class KSP_GUI():
+    def __init__(self,mainwindow):
+        self.mainWindow = mainwindow
+        self.graphWidget = GraphWidget()
+        self.mainWindow.setCentralWidget(self.graphWidget)
+        
+    
 if __name__=='__main__':
     app = QtGui.QApplication([])
     mainWindow = MainWindow()
-    setupMainWindow()
+    gui = KSP_GUI(mainWindow)
     mainWindow.show() 
     
+    
+    
+    #x = np.linspace(1,10,1000)
+    #f =( 3*x**(3/2)+2*x)/(2*(x+3)**3+3)
+    #plt.plot(x,f)
+
     app.exec_()
    
         
