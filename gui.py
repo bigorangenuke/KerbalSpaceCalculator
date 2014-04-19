@@ -48,10 +48,15 @@ class GraphWidget(QtGui.QWidget):
         print('GraphWidget.plotOrbit')
         fig = self.graph.canvas.fig
         ax = fig.add_subplot(111,projection='3d')
-        if z:
-            ax.plot(x,y,z)
-        else:
-            ax.plot(x,y)
+        #ax.grid(b=True)
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('z')
+        #ax.view_init(azim = 180+90 , elev = 270)
+        ax.plot(x,y,z)
+        
+  
+         
     
         
         

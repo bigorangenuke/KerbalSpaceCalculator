@@ -7,6 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import jtools
 import numpy as np
 import fileman
+import orbitPlotter as oplot
 #import orbitPlotter as oplot
 
 
@@ -26,20 +27,23 @@ if __name__=='__main__':
     orbt = [str(x) for x in orbt]
     fileman.appendFile('orbits.orbit', orbt)
     
-    kspgui.graphWidget.plotOrbit(o)
     
-    theta = np.linspace(0,2*np.pi,1000)
-    
-    #Create an empty array to hold calculated radius values
-    r = np.ones_like(theta)
-    print(r[0],theta[0])
-    print(r[0]*np.cos(theta[0]),r[0]*np.sin(theta[1]))
-    #Make a circle of representing kerbin
-    for i,rr in np.ndenumerate(r):
-        r[i] = o.body.radius
-    
-#   #Convert polar to rectangular coordinates
-    x,y = jtools.polarToRectangular(r,theta)
+    op = oplot.OrbitPlotter(o)
+    x,y,z = op.getPath()
+    kspgui.graphWidget.plotOrbit(x,y,z)
+#     
+#     theta = np.linspace(0,2*np.pi,1000)
+#     
+#     #Create an empty array to hold calculated radius values
+#     r = np.ones_like(theta)
+#     print(r[0],theta[0])
+#     print(r[0]*np.cos(theta[0]),r[0]*np.sin(theta[1]))
+#     #Make a circle of representing kerbin
+#     for i,rr in np.ndenumerate(r):
+#         r[i] = o.body.radius
+#     
+# #   #Convert polar to rectangular coordinates
+#     x,y = jtools.polarToRectangular(r,theta)
     
 
     

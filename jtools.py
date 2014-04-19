@@ -1,10 +1,14 @@
 from numpy import cos,sin,arctan,arccos,sqrt
 import numpy
 
-def sphericalToCartesian(coord):
-    r = coord[0]
-    theta=coord[1]
-    phi=coord[2]
+def sphericalToCartesian(*args):
+    
+    if not len(args)==3:
+        print('jtools.sphericalToCartesian not enough args supplied. \n Pass something with length of 3')
+        assert(False)
+    r,theta,phi = args
+
+        
     x = r*sin(theta)*cos(phi)
     y = r*sin(theta)*sin(phi)
     z = r*cos(theta)
