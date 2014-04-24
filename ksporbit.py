@@ -14,7 +14,25 @@ class Conic():
     
         
 class Orbit():
-    def __init__(self,ecc,sma,inc,lan,lpe,mna,body):
+    def __init__(self,*args):
+        ecc = 0
+        sma = 1e6
+        inc = 0
+        lan = 0
+        lpe = 0
+        mna = 0
+        body = 'kerbin'
+        
+        if len(args)==0:
+            print('No args,Make a dummy')
+        elif len(args)==1:
+            print('1 arg')
+            print('list of stuff')
+        elif len(args)==7:
+            ecc,sma,inc,lan,lpe,mna,body = args
+            print(ecc,sma,inc,lan,lpe,mna,body)
+        else:
+            assert False, 'Bad trouble. Number of args not recognized'
         self.body = ksp.Body(str.lower(body))
   
         #Eccentricity (degrees?)

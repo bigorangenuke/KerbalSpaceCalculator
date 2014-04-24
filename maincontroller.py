@@ -10,8 +10,6 @@ import fileman
 import orbitPlotter as oplot
 #import orbitPlotter as oplot
 
-
-
 if __name__=='__main__':
     
     #Create application instance
@@ -26,7 +24,6 @@ if __name__=='__main__':
     orbt = [bdy,ecc,inc,sma,lan,lpe,mna]
     orbt = [str(x) for x in orbt]
     fileman.appendFile('orbits.orbit', orbt)
-    
     
     op = oplot.OrbitPlotter(o)
     x,y,z = op.getPath()

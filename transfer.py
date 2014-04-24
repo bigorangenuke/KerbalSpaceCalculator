@@ -1,48 +1,84 @@
 import ksp
 import numpy as np
-
+import ksporbit as orbit
 class Transfer():
-    def __init__(self,transferType = 1,**kwargs):
-        self.initialOrbit = None
-        self.finalOrbit = None
-        if 'orbit_i' in kwargs:
-            assert()
-            self.initialOrbit = kwargs['orbit_i']
+    def __init__(self,initialOrbit,finalOrbit,**kwargs):
         
-        if 'orbit_f' in kwargs:
-            self.finalOrbit = kwargs['orbit_f']
-        
-        
-        
-        #super(Transfer,self).__init__(ksp.Body)
-        
-        self.transferType = transferType
+        if not initialOrbit.__class__== orbit.Orbit().__class__ or not finalOrbit.__class__==orbit.Orbit().__class__:
+            assert False, 'orbit is not of type ksporbit.Orbit()'
     
-
-    def hohmannTransfer(self,startAltitude, endAltitude, **kwargs):
-        parent = ksp.Body('kerbin')
-        u = parent.gravitationalParameter
-        if 'parent' in kwargs:
-            parent = kwargs['parent']
-            
-        st = parent.radiusForAltitude(startAltitude)
-        en = parent.radiusForAltitude(endAltitude)
+        self.initialOrbit = initialOrbit
+        self.finalOrbit = finalOrbit
         
-        #semimajor axis of transfer orbit
-        a = (st+en)*0.5
         
-        #velocity of transfer orbit at peri and apo
         
-        v_p = np.sqrt(u * (2./st - 2./(st+en)))
-        v_a = np.sqrt(u * (2./en - 2./(st+en)))
         
-        dv_p = np.sqrt(u/st)*(np.sqrt(2*en/(st+en))-1)
-        dv_a = np.sqrt(u/en)*(1-np.sqrt(2*st/(st+en)))
-        dv = dv_p + dv_a
-        print(dv)
-        return dv   
+        
+        
+#     def delta_v(self):
+#         
+#         st = self.parent.radiusForAltitude(startAltitude)
+#         en = self.parent.radiusForAltitude(endAltitude)
+#         
+#         #semimajor axis of transfer orbit
+#         a = (st+en)*0.5
+#         
+#         #initial velocity at the location of the first impulse
+#         v_i1 = np.sqrt(u/st)
+#         v_f1 = np.sqrt(u/en)
+#         
+#         #initial velocity of transfer orbit
+#         v_i2 = np.sqrt(u*(2./st - 1./a))
+#         #final velocity of transfer orbit (location of  second impulse
+#         v_f2 = np.sqrt(u*(2./en-1./a))
+#         
+#         #delta v for impulse 1
+#         dv_a =v_i2-v_i1
+#         #delta v for impulse 2
+#         dv_b = v_f2-v_f1
+# 
+#         
+#         dv = dv_a + dv_b
+#         
+#         #super(Transfer,self).__init__(ksp.Body)
+#         
+#         self.transferType = transferType
+#     
+# 
+#     def hohmannTransfer(self,startAltitude, endAltitude, **kwargs):
+#         parent = ksp.Body('kerbin')
+#         u = parent.gravitationalParameter
+#         if 'parent' in kwargs:
+#             parent = kwargs['parent']
+#             
+#         st = parent.radiusForAltitude(startAltitude)
+#         en = parent.radiusForAltitude(endAltitude)
+#         
+#         #semimajor axis of transfer orbit
+#         a = (st+en)*0.5
+#         
+#         #initial velocity at the location of the first impulse
+#         v_i1 = np.sqrt(u/st)
+#         v_f1 = np.sqrt(u/en)
+#         
+#         #initial velocity of transfer orbit
+#         v_i2 = np.sqrt(u*(2./st - 1./a))
+#         #final velocity of transfer orbit (location of  second impulse
+#         v_f2 = np.sqrt(u*(2./en-1./a))
+#         
+#         #delta v for impulse 1
+#         dv_a =v_i2-v_i1
+#         #delta v for impulse 2
+#         dv_b = v_f2-v_f1
+# 
+#         
+#         dv = dv_a + dv_b
+#         return  
             
 
 if __name__ == '__main__':
-    kerbin = ksp.Body('kerbin')
-    transfer = Transfer(kerbin)
+
+    o1 = orbit.Orbit(0,800000,0,0,0,0,'kerbin')
+    o2 = orbit.Orbit(0,900000,0,0,0,0,'kerbin')
+    
+    transfer = Transfer(o1,o2)
