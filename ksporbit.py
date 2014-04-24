@@ -2,7 +2,7 @@ import numpy as np
 
 import telemachus_plugin as tele
 import ksp
-
+dbg = True
 class Conic():
     def __init__(self):
         self.circle = 0
@@ -24,8 +24,9 @@ class Orbit():
         body = 'kerbin'
         
         if len(args)==0:
-            print('No args,Make a dummy')
+            True
         elif len(args)==1:
+            
             arg = args[0]
 
             ecc = arg[0]
@@ -38,17 +39,20 @@ class Orbit():
 
         elif len(args)==7:
             ecc,sma,inc,lan,lpe,mna,body = args
-            print(ecc,sma,inc,lan,lpe,mna,body)
+            if dbg:print(ecc,sma,inc,lan,lpe,mna,body)
         else:
             assert False, 'Bad trouble. Number of args not recognized'
         self.body = ksp.Body(str.lower(body))
-  
+        print(body)
+        print(self.body.radius)
+        print(self.body)
+        
         #Eccentricity (degrees?)
         self.ecc = ecc
         #Semimajor Axis (m)
-        self.sma = sma + self.body.radius
+        self.sma = sma# + self.body.radius
         #Semiminor Axis (m)
-        self.smb = self.sma*np.sqrt(1-self.ecc*self.ecc)
+        self.smb = sma*np.sqrt(1-ecc*ecc)
         #Inclination (degrees)
         self.inc = inc
         #Right ascension of ascending node,Longitude of Ascending Node (degrees)
@@ -59,7 +63,10 @@ class Orbit():
         self.mna = mna
         
         self.mu = self.body.gravitationalParameter
+        
     
+    def elements(self):
+        return self.ecc,self.sma,self.inc,self.lan,self.lpe,self.mna
     
     def calculatePath(self):
         theta = np.linspace(0,2*np.pi,1000)
@@ -101,8 +108,12 @@ class Orbit():
     def semilatusRectum(self):
         #check shape
         return self.smb*self.smb/self.sma
+    
     def meanMotion(self):
-        return np.sqrt(self.mu/self.sma**(-3))
+        mu = self.mu
+        print(mu)
+        return np.sqrt(self.mu/self.sma**3)
+    
     def eccentricAnomaly(self,nu):
         return np.arccos((self.ecc + np.cos(nu))/(1+self.ecc*np.cos(nu)))
     
@@ -113,9 +124,26 @@ class Orbit():
     def timeOfFlight(self,nu):
         return (self.meanAnomaly(nu)-self.mna)/self.meanMotion()
     
+    def position(self,nu):
+        r = self.sma * (1-self.ecc*self.ecc)/(1+self.ecc*np.cos(nu))
+        return r
+    
+    def flightPathAngle(self,nu):
+        phi = np.arctan(self.ecc*np.sin(nu)/(1+self.ecc*np.cos(nu)))
+        return phi
+    
+    def azimuthHeading(self):
+        #cos(i)=cos(delta)*sin(beta)
+        print('crap')
+    
+    def geocentricLatitude(self):
+        print('geocentricLatitude')
+    
+    
+    
+    
 
-if __name__=='__main__':
-    print(tele.read_asl())
+
     
     
         

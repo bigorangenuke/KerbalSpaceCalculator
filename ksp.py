@@ -34,6 +34,8 @@ class Body():
         self.orbit = None
         
         self.importDataForBody(bodyName)
+        
+        
     def __str__(self):
         return self.name
     
@@ -94,11 +96,11 @@ class Body():
         
     def importDataForBody(self,body):
         with open('PhysicalParameters.txt') as f:
+            if dbg: 'ksp.Body.importDataForBody'
             reader = csv.reader(f)
-         
             for row in reader:
                 if row[0].lower()==body:
-                    print (row[0])
+                    if dbg: print (row[0])
                     self.name=body
                     self.referenceCode=int(row[1])
                     if row[2]:
@@ -126,6 +128,7 @@ class Body():
                         
                     self.orbit = Orbit(self)
             f.close()
+        print()
         
         
 class Orbit():
@@ -219,7 +222,6 @@ class Orbit():
         if not gravitationalParameter:
             gravitationalParameter=self.body.gravitationalParamter
         r = m.pow(period*period*gravitationalParameter/(4*m.pi*m.pi),(1/3.))
-        
         if dbg: print ('Altitude of',r, 'm required for orbital period of', period,'s')
         
                              

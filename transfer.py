@@ -2,14 +2,13 @@ import ksp
 import numpy as np
 import ksporbit as orbit
 class Transfer():
-    def __init__(self,initialOrbit,finalOrbit,**kwargs):
+    def __init__(self,initialOrbit,finalOrbit=None,**kwargs):
         
-        if not initialOrbit.__class__== orbit.Orbit().__class__ or not finalOrbit.__class__==orbit.Orbit().__class__:
+        if not initialOrbit.__class__== orbit.Orbit().__class__:# or not finalOrbit.__class__==orbit.Orbit().__class__:
             assert False, 'orbit is not of type ksporbit.Orbit()'
     
         self.initialOrbit = initialOrbit
-        self.finalOrbit = finalOrbit
-        
+        #self.finalOrbit = finalOrbit
         
         
         
@@ -78,7 +77,22 @@ class Transfer():
 
 if __name__ == '__main__':
 
-    o1 = orbit.Orbit(0,800000,0,0,0,0,'kerbin')
-    o2 = orbit.Orbit(0,900000,0,0,0,0,'kerbin')
+    o1 = orbit.Orbit(0.1,7500000,0,0,0,0,'earth')
+    #o2 = orbit.Orbit(0,900000,0,0,0,0,'kerbin')
     
-    transfer = Transfer(o1,o2)
+    nu1  = np.pi/6.
+    nu2  = np.pi*0.5
+    M1  = o1.meanAnomaly(nu1)
+    M2  = o1.meanAnomaly(nu2)
+    
+    n = o1.meanMotion()
+    
+    t = (M2-M1)/n
+    
+    print(M1,M2,t)
+     
+    #print(p1,p2)
+    print(o1.position(0))
+    #print(o1.flightPathAngle(np.pi))
+    
+    transfer = Transfer(o1)

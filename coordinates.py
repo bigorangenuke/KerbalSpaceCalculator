@@ -130,22 +130,30 @@ def unitCartesianToSpherical(theta,phi,x_hat,y_hat,z_hat = 0):
 def x_rotation(theta):
 	if dbg:print('coordinates.x_rotation')
 	xr = np.zeros((3,3))
-	xr[0,0] = 1
-	xr[1,1] = np.cos(theta)
-	xr[2,1] = -np.sin(theta)
-	xr[1,2] = np.sin(theta)
-	xr[2,2] = np.cos(theta)
+	
+# 	[[1,0,0],
+# 	[0,cos,-sin],
+# 	0,sin,cos]
+	r = np.zeros((3,3))
+	r[0,0] = np.cos(theta)
+	r[2,0] = np.sin(theta)
+	r[1,1] = 1
+	r[0,2] = -np.sin(theta)
+	r[2,2] = np.cos(theta)
+	
 	return xr
 
 def y_rotation(theta):
 	if dbg:print('coordinates.y_rotation')
-	yr = np.zeros((3,3))
-	yr[0,0] = np.cos(theta)
-	yr[2,0] = np.sin(theta)
-	yr[1,1] = 1
-	yr[0,2] = -np.sin(theta)
-	yr[2,2] = np.cos(theta)
-	return yr
+	r = np.zeros((3,3))
+	r[0,0] = 1
+	r[1,1] = np.cos(theta)
+	r[2,1] = -np.sin(theta)
+	r[1,2] = np.sin(theta)
+	r[2,2] = np.cos(theta)
+	
+
+	return r
 
 def z_rotation(theta):
 	if dbg:print('coordinates.z_rotation')
@@ -159,21 +167,19 @@ def z_rotation(theta):
 
 def rotation(**kwargs):
 	if dbg:print('coordinates.rotation')
-	X = x_rotation(0)
-	Y = y_rotation(0)
-	Z = z_rotation(0)
-	R = x_rotation(0)
+	R = np.identity(3)
 	if 'x' in kwargs:
 		R *= x_rotation(kwargs['x'])
 	if 'y' in kwargs:
 		R *= y_rotation(kwargs['y'])
-		Y = y_rotation(kwargs['y'])
 	if 'z' in kwargs:
 		R *= z_rotation(kwargs['z'])
 	return R
 
-
 def plotVectors(vectors,coord_type=0):
+	
+	
+	
 	X,Y,Z=zip(*vectors)
 	if coord_type==1:
 		v = sphericalToCartesian(vectors)
@@ -190,10 +196,14 @@ def plotVectors(vectors,coord_type=0):
 	for i in range(len(X)):
 		ax.plot([0,X[i]],[0,Y[i]],[0,Z[i]])
 	
-	ax.set_xlim([-5,5])
-	ax.set_ylim([-5,5])
-	ax.set_zlim([-5,5])
-
+	d = 1
+	ax.set_xlim([-d,d])
+	ax.set_ylim([-d,d])
+	ax.set_zlim([-d,d])
+	
+	ax.set_xlabel('x')
+	ax.set_ylabel('y')
+	ax.set_zlabel('z')
 	#plt.show()
 
 	
@@ -205,14 +215,19 @@ if __name__=='__main__':
 	#ax = fig.add_subplot(111,projection='3d')
 
 	# v = [[1,1,1],[1,0,0],[1,np.pi*0.5,np.pi*0.5]]
-	v = [0,0,1]
-	u = np.array([1,1,1])
-
+	v = np.array([1,1,1])
+	#u = np.array([1,1,1])
+	
 	#xrot = x_rotation(1.57)
-	uu = np.dot(x_rotation(1.57),u)
-	vv = np.dot(rotation(x=np.pi*0.25,y =np.pi*0.5,z = 0),u)
-	print(vv)
+	#uu = np.dot(x_rotation(1.57),u)
+	#vv = np.dot(rotation(x=np.pi*0.25,y =np.pi*0.5,z = 0),u)
 
-	plotVectors([uu,v,vv])
+	x = np.dot(x_rotation(np.pi*0.5),v)
+	y = np.dot(y_rotation(np.pi*0.5),v)
+	z = np.dot(z_rotation(np.pi*0.5),v)
+	
+	plotVectors([v,x,y,z])
 
 	plt.show()
+
+	
