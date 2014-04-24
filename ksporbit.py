@@ -26,8 +26,16 @@ class Orbit():
         if len(args)==0:
             print('No args,Make a dummy')
         elif len(args)==1:
-            print('1 arg')
-            print('list of stuff')
+            arg = args[0]
+
+            ecc = arg[0]
+            sma = arg[1]
+            inc = arg[2]
+            lan = arg[3]
+            lpe = arg[4]
+            mna = arg[5]
+            body = arg[6]
+
         elif len(args)==7:
             ecc,sma,inc,lan,lpe,mna,body = args
             print(ecc,sma,inc,lan,lpe,mna,body)

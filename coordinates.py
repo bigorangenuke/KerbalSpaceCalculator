@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-
+import copy 
 cartesian = 0
 spherical = 1
 cylindrical =2
@@ -159,17 +159,17 @@ def z_rotation(theta):
 
 def rotation(**kwargs):
 	if dbg:print('coordinates.rotation')
+	X = x_rotation(0)
+	Y = y_rotation(0)
+	Z = z_rotation(0)
+	R = x_rotation(0)
 	if 'x' in kwargs:
-		xrot = kwargs['x']
+		R *= x_rotation(kwargs['x'])
 	if 'y' in kwargs:
-		yrot = kwargs['y']
+		R *= y_rotation(kwargs['y'])
+		Y = y_rotation(kwargs['y'])
 	if 'z' in kwargs:
-		zrot = kwargs['z']
-
-	X = x_rotation(xrot)
-	Y = y_rotation(yrot)
-	Z = z_rotation(zrot)
-	R = X*Y*Z
+		R *= z_rotation(kwargs['z'])
 	return R
 
 
@@ -194,25 +194,25 @@ def plotVectors(vectors,coord_type=0):
 	ax.set_ylim([-5,5])
 	ax.set_zlim([-5,5])
 
-	plt.show()
+	#plt.show()
 
 	
 
 
 if __name__=='__main__':
 
-	fig = plt.figure()
-	ax = fig.add_subplot(111,projection='3d')
-	
-	u = Vector([1,1,1])
-	print(u.get_magnitude())
-	print(u.get_unitVector())
+	#fig = plt.figure()
+	#ax = fig.add_subplot(111,projection='3d')
 
+	# v = [[1,1,1],[1,0,0],[1,np.pi*0.5,np.pi*0.5]]
+	v = [0,0,1]
+	u = np.array([1,1,1])
 
-	v = [[1,1,1],[1,0,0],[1,np.pi*0.5,np.pi*0.5]]
-	
-	plotVectors(v)
-	print(v)
-	
-	
+	#xrot = x_rotation(1.57)
+	uu = np.dot(x_rotation(1.57),u)
+	vv = np.dot(rotation(x=np.pi*0.25,y =np.pi*0.5,z = 0),u)
+	print(vv)
+
+	plotVectors([uu,v,vv])
+
 	plt.show()
