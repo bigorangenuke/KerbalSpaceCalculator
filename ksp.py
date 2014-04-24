@@ -57,7 +57,7 @@ class Body():
     
     def synchronousOrbit(self,radius=False):
         so = pow(self.gravitationalParameter*(self.siderealDay/(2.*m.pi))**2,(1./3.))
-        print (self.gravitationalParameter,self.siderealDay)
+       
         
         if not ksp:
             if radius:
@@ -95,39 +95,44 @@ class Body():
         return self.gravitationalParameter/G
         
     def importDataForBody(self,body):
-        with open('PhysicalParameters.txt') as f:
+        filename = 'PhysicalParameters.txt'
+
+        f= open(filename)
+        lines = f.readlines()
+        f.close()
+
+        for line in lines:
             if dbg: 'ksp.Body.importDataForBody'
-            reader = csv.reader(f)
-            for row in reader:
-                if row[0].lower()==body:
-                    if dbg: print (row[0])
-                    self.name=body
-                    self.referenceCode=int(row[1])
-                    if row[2]:
-                        self.parent=Body(row[2].lower())
-                    self.radius=float(row[3])#meters
-                    self.gravitationalParameter=float(row[4])#m^3/s^2
-                    self.sphereOfInfluence=float(row[5])#meters
-                    self.siderealDay=float(row[6])#seconds
-                    if row[8]:
-                        self.hasAtmosphere=True
-                        if row[7]=='Oxygen':
-                            self.hasOxygen=True
-                        else:
-                            self.hasOxygen=False
-                        self.pressureAtSeaLevel=float(row[8])#dunno
-                        self.atmosphereScaleHeight=int(row[9])#dunno
-                        self.atmosphereCutoff=float(row[10]) #km
+            line = [l.strip() for l in l.split(',')]
+            print(line)
+            if row[0].lower()==body:
+                if dbg: print (row[0])
+                self.name=body
+                self.referenceCode=int(row[1])
+                if row[2]:
+                    self.parent=Body(row[2].lower())
+                self.radius=float(row[3])#meters
+                self.gravitationalParameter=float(row[4])#m^3/s^2
+                self.sphereOfInfluence=float(row[5])#meters
+                self.siderealDay=float(row[6])#seconds
+                if row[8]:
+                    self.hasAtmosphere=True
+                    if row[7]=='Oxygen':
+                        self.hasOxygen=True
                     else:
-                        self.hasAtmosphere=False
-                            
-                    if row[11]=="Yes":
-                        self.hasOceans=True
-                    else:
-                        self.hasOceans=False
+                        self.hasOxygen=False
+                    self.pressureAtSeaLevel=float(row[8])#dunno
+                    self.atmosphereScaleHeight=int(row[9])#dunno
+                    self.atmosphereCutoff=float(row[10]) #km
+                else:
+                    self.hasAtmosphere=False
                         
-                    self.orbit = Orbit(self)
-            f.close()
+                if row[11]=="Yes":
+                    self.hasOceans=True
+                else:
+                    self.hasOceans=False
+                    
+                self.orbit = Orbit(self)
         print()
         
         
