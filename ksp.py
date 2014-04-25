@@ -103,8 +103,8 @@ class Body():
 
         for line in lines:
             if dbg: 'ksp.Body.importDataForBody'
-            line = [l.strip() for l in l.split(',')]
-            print(line)
+            line = [l.strip() for l in line.split(',')]
+            row = line
             if row[0].lower()==body:
                 if dbg: print (row[0])
                 self.name=body

@@ -8,7 +8,11 @@ class Transfer():
             assert False, 'orbit is not of type ksporbit.Orbit()'
     
         self.initialOrbit = initialOrbit
+        
+        
+        
         #self.finalOrbit = finalOrbit
+        
         
         
         
