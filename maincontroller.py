@@ -22,7 +22,8 @@ def checkPlotting():
     
     o1 = orbit.Orbit(0,radius1,0,0,0,0,'kerbin')
     o2 = orbit.Orbit(0,radius2,0,0,0,0,'kerbin') 
-    #print (o1.orbitalPeriod())
+    
+ 
     t = transfer.Transfer(o1,o2)
     o3 = t.transferOrbit
     
@@ -33,7 +34,7 @@ def checkPlotting():
     
     op2 = oplot.OrbitPlotter(o2)
     x2,y2,z2 = op2.getPath()
-    
+     
     op3 = oplot.OrbitPlotter(o3)
     x3,y3,z3 = op3.getPath()
     
@@ -41,7 +42,7 @@ def checkPlotting():
 
     ax = fig.add_subplot(111,projection='3d')
     ax.plot(x1,y1,z1,label='initial orbit')
-    ax.plot(x2,y2,z2,label='final orbit')
+#     ax.plot(x2,y2,z2,label='final orbit')
     ax.plot(x3,y3,z3,label='transfer orbit 1')
     ax.set_xlabel('x')
     ax.set_ylabel('y')

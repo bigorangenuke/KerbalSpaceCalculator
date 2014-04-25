@@ -64,7 +64,7 @@ class Transfer():
         sma_tr = (r_s+r_f)*0.5
         ecc_tr = orbit.eccentricity(r_s,r_f)
         print('Flight Path Angle = ',self.initialOrbit.flightPathAngle(nu))
-        self.transferOrbit = orbit.Orbit(ecc_tr,sma_tr,0,0,0,0,'earth')
+        self.transferOrbit = orbit.Orbit(ecc_tr,sma_tr,initialOrbit.inc,0,0,0,'earth')
         
         
         self.transferOrbit.flightPathAngle(2)

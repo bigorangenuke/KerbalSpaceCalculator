@@ -192,7 +192,37 @@ class Orbit():
         if dbg: print('ksporbit.Orbit.geocentricLatitude()')
         if dbg:print('geocentricLatitude')
     
+    def p(self):
+        return np.tan(self.inc*0.5)*np.sin(self.lan) 
     
+    def q(self):
+        return np.tan(self.inc*0.5)*np.cos(self.lan)
+
+
+    def radiusVector(self,nu=None):
+        
+        if not nu:
+            nu = np.linspace(0,2*np.pi,1000)
+            
+        lan = self.lan
+    
+        mna = self.mna
+        i = self.inc
+        
+        lan = np.pi*0.2
+        i = 0.0001
+        mna = 0.001
+        
+        
+        p =np.tan(i*0.5)*np.sin(lan) 
+        print(nu)
+        
+        rx = p*(np.cos(lan)*np.cos(mna+nu)-np.sin(lan)*np.cos(i)*np.sin(mna+nu))
+        ry = p*(np.sin(lan)*np.cos(mna+nu)+np.cos(lan)*np.cos(i)*np.sin(mna+nu))
+    
+        rz = p*np.sin(i)*np.sin(mna+nu)
+        
+        return np.asarray([rx,ry,rz])
     
     
 

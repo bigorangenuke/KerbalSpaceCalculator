@@ -68,6 +68,8 @@ def sphericalToCartesian(*args,**kwargs):#r,phi,theta=None):
 		phi = args[1]
 		theta=args[2]
 	
+	for i,xx in enumerate(r):
+		print(r[i],phi[i],theta[i])
 
 	if kwargs:
 		print('coordinates.sphericalToCartesian kwargs passed')
@@ -76,7 +78,8 @@ def sphericalToCartesian(*args,**kwargs):#r,phi,theta=None):
 	y = r*np.sin(theta)*np.sin(phi)
 	z = r*np.cos(theta)
 	
-	
+	for i,xx in enumerate(x):
+		print(x[i],y[i],z[i])
 	
 	if isVector:
 		return np.column_stack((x,y,z))

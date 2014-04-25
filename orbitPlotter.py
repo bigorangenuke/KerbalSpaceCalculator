@@ -4,6 +4,9 @@ import numpy as np
 import jtools
 import coordinates as crd
 
+
+
+
 class OrbitPlotter():
     def __init__(self,orbit):
         self.orbit = orbit
@@ -19,8 +22,10 @@ class OrbitPlotter():
         
     def getPath(self):
         #x,y= self.orbitShape()
-        r,theta,phi = self.changeOrbitShape()
+        r,phi,theta = self.changeOrbitShape()
         x,y,z = crd.sphericalToCartesian(r,phi,theta)
+        
+
         return x,y,z
     
     def changeInclination(self,r,theta,dInc):
@@ -30,11 +35,22 @@ class OrbitPlotter():
         
         sma = self.sma
         ecc = self.ecc
+        inc = np.pi*0.5-self.inc
         
         phi = np.linspace(0,2*np.pi,2048)
         r = sma*(1-ecc*ecc)/(1+ecc*np.cos(phi))
-        theta = np.zeros_like(phi)
-        theta.fill(self.inc)
+        
+        theta_dir = np.asarray([0,0,1])
+
+        R = self.orbit.radiusVector()
+        
+        
+        theta=np.dot(theta_dir,R[0,:])/(np.linalg.norm(R[0,:])*np.linalg.norm(theta_dir))
+
+            
+        
+        
+        
         
         #np.radians(self.inc))
         #r,theta,phi = self.orbitTransform(r,theta,phi, PHI = self.lan)
