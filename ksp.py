@@ -1,7 +1,7 @@
 import math as m
 import numpy as np
 import csv
-
+import ksporbit as orbit
 
 
 #import sympy as sp
@@ -15,7 +15,9 @@ ksp =True
 
 class Body():
     def __init__(self,bodyName=None):
+        doImportData = True
         if not bodyName:
+            doImportData = False
             bodyName = 'kerbin'
             
         self.name=None
@@ -33,7 +35,8 @@ class Body():
         self.hasOceans= False
         self.orbit = None
         
-        self.importDataForBody(bodyName)
+        if doImportData:
+            self.importDataForBody(bodyName)
         
         
     def __str__(self):
@@ -104,20 +107,17 @@ class Body():
         if dbg: print('ksp.Body.importDataForBody(%s)'%(body))
         filename = 'PhysicalParameters.txt'
 
-        buf = open(filename,'rb').read()
-        print(len(buf))
-        print(buf[168])
-        ubuf = buf.decode('utf8')
         f= open(filename,'r')
         lines = f.readlines()
         f.close()
 
-
+        bodyFound = False
         for line in lines:
             if dbg: 'ksp.Body.importDataForBody'
             line = [l.strip() for l in line.split(',')]
             row = line
             if row[0].lower()==body:
+                bodyFound = True
                 if dbg: print (row[0])
                 self.name=body
                 self.referenceCode=int(row[1])
@@ -144,215 +144,8 @@ class Body():
                 else:
                     self.hasOceans=False
                     
-                self.orbit = Orbit(self)
-        print()
-        
-        
-class Orbit():
-    def __init__(self,body,isArtificial=None):
-        self.body = body
-        self.parent = None
-        self.semiMajorAxis=None
-        self.eccentricity=None
-        self.inclination=None
-        self.argumentOfThePeriapsis=None
-        self.longitudeOfTheAscendingNode=None
-        #Mean Anomaly at epoch UT = 0.0 (in radians)
-        self.meanAnomaly=None
-        self.periapsis=None
-        self.periapsisRadius=None
-        self.apoapsis=None
-        self.apoapsisRadius=None
-        
-        if isArtificial:
-            print('satellite')
-            self.parent =  body
-        else:
-            #Load preset from file
-            if body.name:
-                f = open('OrbitalParameters.txt','r')
-                lines = f.readlines()
-                f.close()
-                   
-                for line in lines:
-                    line = [l.strip() for l in line.split(',')] 
-                    row = line
-                    if row[0].lower()==body.name:
-                        self.body = body
-                        self.parent = body.parent
-                        self.semiMajorAxis=float(row[3])
-                        self.eccentricity=float(row[4])
-                        self.inclination=float(row[5])
-                        self.argumentOfThePeriapsis=float(row[6])
-                        self.longitudeOfTheAscendingNode=float(row[7])
-                        self.meanAnomaly=float(row[8])
-                        self.periapsis=float(row[11])
-                        self.periapsisRadius=float(row[10])
-                        self.apoapsis=float(row[13])
-                        self.apoapsisRadius=float(row[12])
-
-    def specificAngularMomentum(self):
-        #http://en.wikipedia.org/wiki/Specific_angular_momentum#Elliptical_orbit
-        b = self.semiMinorAxis()
-        a = self.semiMajorAxis
-        u = self.body.gravitationalParameter
-        m1 = self.parent.mass()
-        m2 = self.body.mass()
-        h= 2*m.pi*a*b/(2*m.pi*m.sqrt(a*a*a/(G*(m1+m2))))
-        if dbg: print ("specific angular momentum = ", h)
-        return h
-    
-    def semiMinorAxis(self,eccentricity=None,semimajorAxis=None):
-        ecc = self.eccentricity
-        a = self.semiMajorAxis
-        if eccentricity:
-            ecc = eccentricity
-        if semimajorAxis:
-            a = semimajorAxis
-        b = a*m.sqrt(1-ecc**2)
-        if dbg:print ('Semi-Minor Axis = ', b,"m")
-        return b
-        
-    def orbitalPeriod(self,*semimajorAxis, **gravitationalParameter):
-        
-        u =self.body.gravitationalParameter
-        if self.semiMajorAxis:
-            a = self.semiMajorAxis
-        
-        if semimajorAxis:
-            a = semimajorAxis
-            
-    
-        if gravitationalParameter:
-            u = gravitationalParameter
-        period = m.sqrt(4*m.pi*m.pi*a**3/u)
-        if dbg: print ("period = ", period ,"s")
-        return period
-        
-    def gm(self,m1=None,m2=None):
-        m = self.body.mass()
-        M = self.parent.mass()
-        if m1:
-            m = m1
-        if m2:
-            M=m2
-        return G*(M+m)
-    
-    def altitudeForOrbitalPeriod(self,period,gravitationalParameter=None):
-        if not gravitationalParameter:
-            gravitationalParameter=self.body.gravitationalParamter
-        r = m.pow(period*period*gravitationalParameter/(4*m.pi*m.pi),(1/3.))
-        if dbg: print ('Altitude of',r, 'm required for orbital period of', period,'s')
-        
-                             
-    def orbitalSpeed(self,altitude,radius=None,gravitationalParameter=None):
-        
-        u=self.parent.gravitationalParameter
-        r = self.parent.radiusForAltitude(altitude)
-        print(r)
-        if r>self.apoapsisRadius or r<self.periapsisRadius:
-            print ('Orbt.orbitalSpeed altitude is greater than periapsis/apoapsis')
-        #self.orbitalSpeed = m.sqrt(u*(2/r-1/self.semiMajorAxis))
-        
-        if radius:
-            r = radius + altitude
-        if gravitationalParameter:
-          
-            u = gravitationalParameter
-            
-        v =  m.sqrt(u/r)
- 
-        if dbg: print ('Orbital Speed =', v,'m/s')
-        return v
-            
-    def specificOrbitalEnergy(self):
-        #Joules per kilogram
-        u=self.body.gravitationalParameter
-        a = self.semiMajorAxis
-        return -u/2./a
-
-
-
-    
-
-def interplanetaryHohmannTransfer(originAltitude,originBody,targetBody):
-    print ('*'*25)
-    print ('Hohmann Transfer from', originBody.name.capitalize(), '(',originAltitude,'m ) to ',targetBody.name.capitalize())
-    r1 = originBody.orbit.periapsisRadius
-    r2 = targetBody.orbit.periapsisRadius
-    alt = originBody.radiusForAltitude(originAltitude)
-    u = sun.gravitationalParameter    
-    oSoi = originBody.sphereOfInfluence
-    ou = originBody.gravitationalParameter
-    
-    r1 = 13.5e6
-    r2 = r1*3
-    alt = 700e3
-    oSoi = 82e6
-    u = 1.167922e9
-    ou=3530.461
-
-  
-    
-    time = m.pi*m.sqrt((r1+r2)**3/(8.*u))
-    print ('Transfer Time =',time,'s')
-    ev = originBody.escapeVelocity()
-    
-   
-    print ("Escape velocity = ",ev,'m/s')
-    targetTravel = m.sqrt(u/r2)*time/r2*180/m.pi
-    phaseAngle=180-targetTravel
-    
-    print ('Kerbin r =', r1, 'm\tDuna r =',r2,'m')
-    
-    print ('Phase Angle (in degrees) = ', phaseAngle)
-
-    
-    velocityAtEdgeOfSoi = m.sqrt(u/r1)*(m.sqrt(2*r2/(r1+r2))-1)
-    v2 = velocityAtEdgeOfSoi
-    
-    ejectionVelocity = m.sqrt((alt*(oSoi*v2*v2-2*ou)+2*oSoi*ou)/(alt*oSoi))
-    print ("ejection velocity = ", ejectionVelocity ,"m/s")
-    
-    specificOrbitalEnergy = ejectionVelocity**2/2-ou/alt
-    h = ejectionVelocity*alt
-    ee = m.sqrt(1+2*epsilon*h*h/ou/ou)
-    ejectionAngle = 180-m.acos(1/ee)
-    
-    print ('ejection angle (in degrees) =',ejectionAngle)
-   
-    
-class Satellite():
-    def __init__(self,parent,mass):
-        self.mass=mass
-        self.altitude = None
-        self.parent=parent
-        
-        self.mass = None
-        #self.orbit = Orbit(earth,True)
-
-        
-        
-        
-if __name__ == '__main__':
-    
-    kerbin = Body('kerbin')
-    hohmannTransfer(1e5,2e5)
-#sun = Body('sun')
-# kerbin = Body('kerbin')
-# duna = Body('duna')
-# 
-# earth = Body('earth')
-# sat = Satellite(earth,1)
-# sat.altitude=200000
-# sat.orbit.orbitalSpeed(sat.altitude)
-# 
-# print '*'*20
-# 
-# 
-# if dbg: 'Problem 1 = ', sat.orbit.orbitalSpeed(sat.altitude),'m/s'
-# if dbg: 'Problem 2 = ', sat.orbit.orbitalPeriod(sat.altitude),"s"
-# 
-
+                self.orbit = orbit.Orbit(self)
+                
+        assert bodyFound,'body %s not found in %s'%(body,filename)
 
 

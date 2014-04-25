@@ -31,27 +31,56 @@ class Orbit():
         mna = 0
         body = 'kerbin'
         
+        
 
         if len(args)==0:
             True
         elif len(args)==1:
-            
             arg = args[0]
+            if arg.__class__==ksp.Body().__class__:
+                print('its a body!')
+                self.body = arg
+                
+                
+            elif len(arg)>1:
+                ecc = arg[0]
+                sma = arg[1]
+                inc = arg[2]
+                lan = arg[3]
+                lpe = arg[4]
+                mna = arg[5]
+                body = arg[6]
+#             elif len(arg)==1:
+#                 #Load preset from file
+#         
+#                 f = open('OrbitalParameters.txt','r')
+#                 lines = f.readlines()
+#                 f.close()
+#                        
+#                 for line in lines:
+#                     line = [l.strip() for l in line.split(',')] 
+#                     row = line
+#                     if row[0].lower()==arg.name:
+#                         body=str(row[0])
+#                         sma=float(row[3])
+#                         ecc=float(row[4])
+#                         inc=float(row[5])
+#                         lpe=float(row[6])
+#                         lan=float(row[7])
+#                         mna=float(row[8])
+#                         #self.periapsis=float(row[11])
+#                         #self.periapsisRadius=float(row[10])
+#                         #self.apoapsis=float(row[13])
+#                         #self.apoapsisRadius=float(row[12])
 
-            ecc = arg[0]
-            sma = arg[1]
-            inc = arg[2]
-            lan = arg[3]
-            lpe = arg[4]
-            mna = arg[5]
-            body = arg[6]
 
         elif len(args)==7:
             ecc,sma,inc,lan,lpe,mna,body = args
             if dbg:print(ecc,sma,inc,lan,lpe,mna,body)
         else:
             assert False, 'Bad trouble. Number of args not recognized'
-        self.body = ksp.Body(str.lower(body))
+        if not self.body:  
+            self.body = ksp.Body(str.lower(body))
         #print(body)
         #print(self.body.radius)
         #print(self.body)

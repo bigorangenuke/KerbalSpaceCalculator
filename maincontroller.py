@@ -20,41 +20,44 @@ if __name__=='__main__':
     mainWindow = gui.MainWindow()
     kspgui = gui.KSP_GUI(mainWindow)
     mainWindow.show()
-
-
-
-
-    #ecc,inc,sma,lan,lpe,mna,bdy = telemachus.read_orbital_elements()
-    #o = orbit.Orbit(ecc,inc,sma,lan,lpe,mna,bdy)
+    
+    
     earth = ksp.Body('earth')
-    radius1 = earth.radiusForAltitude(2e5)
-    radius2 = earth.radiusForAltitude(3e5)
     
-    o1 = orbit.Orbit(0,radius1,0,0,0,0,'earth')
-    o2 = orbit.Orbit(0,radius2,0,0,0,0,'earth')
-    fig = plt.figure()
-    
-    phi = np.linspace(0,2*np.pi,5000)
-    r = o1.sma*(1-o1.ecc*o1.ecc)/(1+o1.ecc * np.cos(phi))
-    theta = np.zeros_like(phi)
-    theta.fill(o1.inc)
-    
-    C = crd.sphericalToCartesian([r,phi,theta])
-    X = C[:,0]
-    Y = C[:,1]
-    Z = C[:,2]
-    print(C)
-    
-    print(X)
-    
-    
-    
+
+
+
+#     #ecc,inc,sma,lan,lpe,mna,bdy = telemachus.read_orbital_elements()
+#     #o = orbit.Orbit(ecc,inc,sma,lan,lpe,mna,bdy)
+#     earth = ksp.Body('earth')
+#     radius1 = earth.radiusForAltitude(2e5)
+#     radius2 = earth.radiusForAltitude(3e5)
 #     
-#     x = r*np.cos(phi)
-#     y = r*np.sin(phi)
-#     plt.plot(x,y)
-#     plt.show()
+#     o1 = orbit.Orbit(0,radius1,0,0,0,0,'earth')
+#     o2 = orbit.Orbit(0,radius2,0,0,0,0,'earth')
+#     fig = plt.figure()
 #     
+#     phi = np.linspace(0,2*np.pi,5000)
+#     r = o1.sma*(1-o1.ecc*o1.ecc)/(1+o1.ecc * np.cos(phi))
+#     theta = np.zeros_like(phi)
+#     theta.fill(o1.inc)
+#     
+#     C = crd.sphericalToCartesian([r,phi,theta])
+#     X = C[:,0]
+#     Y = C[:,1]
+#     Z = C[:,2]
+#     print(C)
+#     
+#     print(X)
+#     
+#     
+#     
+# #     
+# #     x = r*np.cos(phi)
+# #     y = r*np.sin(phi)
+# #     plt.plot(x,y)
+# #     plt.show()
+# #     
     
     
     
