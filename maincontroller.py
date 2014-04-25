@@ -13,6 +13,27 @@ import ksp
 import coordinates as crd
 #import orbitPlotter as oplot
 
+
+
+def checkPlotting():
+    earth = ksp.Body('earth')
+    radius1 = earth.radiusForAltitude(2e5)
+    radius2 = earth.radiusForAltitude(3e5)
+    
+    o1 = orbit.Orbit(0,radius1,0,0,0,0,'earth')
+    o2 = orbit.Orbit(0,radius2,0,0,0,0,'earth') 
+    
+    op1 = oplot.OrbitPlotter(o1)
+    x,y,z=op1.getPath()
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111,projection='3d')
+    ax.plot(x,y,z)
+    fig.canvas.draw()
+    plt.show()
+
+    
+
 if __name__=='__main__':
     
     #Create application instance
@@ -21,12 +42,7 @@ if __name__=='__main__':
     kspgui = gui.KSP_GUI(mainWindow)
     mainWindow.show()
     
-    
-    earth = ksp.Body('earth')
-    
-
-
-
+    checkPlotting()
 #     #ecc,inc,sma,lan,lpe,mna,bdy = telemachus.read_orbital_elements()
 #     #o = orbit.Orbit(ecc,inc,sma,lan,lpe,mna,bdy)
 #     earth = ksp.Body('earth')

@@ -56,6 +56,9 @@ def sphericalToCartesian(*args,**kwargs):#r,phi,theta=None):
 	r = u[:,0]
 	phi = u[:,1]
 	theta = u[:,2]
+	
+	
+	
 	if kwargs:
 		print('coordinates.sphericalToCartesian kwargs passed')
 	

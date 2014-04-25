@@ -3,6 +3,7 @@ import numpy as np
 import telemachus_plugin as tele
 import ksp
 dbg = True
+
 class Conic():
     def __init__(self):
         self.circle = 0
@@ -21,7 +22,10 @@ def eccentricity(radius_apo,radius_per):
     assert float(radius_apo) and float(radius_per)
     return np.abs((radius_apo - radius_per))/(radius_apo + radius_per)
 
+
+
 class Orbit():
+    
     def __init__(self,*args):
         ecc = 0
         sma = 1e6
@@ -30,6 +34,8 @@ class Orbit():
         lpe = 0
         mna = 0
         body = 'kerbin'
+        
+        self.body=None
         
         
 

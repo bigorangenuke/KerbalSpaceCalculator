@@ -3,6 +3,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import math as m
 import numpy as np
 import jtools
+import coordinates as crd
 
 class OrbitPlotter():
     def __init__(self,orbit):
@@ -20,7 +21,7 @@ class OrbitPlotter():
     def getPath(self):
         #x,y= self.orbitShape()
         r,theta,phi = self.changeOrbitShape()
-        x,y,z = jtools.sphericalToCartesian(r,theta,phi)
+        x,y,z = crd.sphericalToCartesian(r,theta,phi)
         return x,y,z
     
     def changeInclination(self,r,theta,dInc):
