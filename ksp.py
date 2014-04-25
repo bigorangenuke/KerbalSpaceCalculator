@@ -8,7 +8,7 @@ import csv
 
 
 G = 6.67384e-11 #m^3/kg/s^2
-dbg = True
+dbg = False
 ksp =True
 
 
@@ -27,7 +27,7 @@ class Body():
         self.siderealDay=None#seconds
         self.hasAtmosphere=False
         self.hasOxygen=False
-        self.pressureAtSeaLevel=None#dunno
+        self.pressureAtSeaLevel=None#kPa
         self.atmosphereScaleHeight=None#dunno
         self.atmosphereCutoff=None #km
         self.hasOceans= False
@@ -45,7 +45,7 @@ class Body():
         return f
     
     def forceOfGravity(self,altitude,mass=None):
-        
+        if dbg: print('ksp.Body.forceOfGravity()')
         r = self.radius+altitude
         
         if not mass:
@@ -56,6 +56,7 @@ class Body():
         return force  
     
     def synchronousOrbit(self,radius=False):
+        if dbg: print('ksp.Body.synchronousOrbit()')
         so = pow(self.gravitationalParameter*(self.siderealDay/(2.*m.pi))**2,(1./3.))
        
         
@@ -74,10 +75,12 @@ class Body():
                 return self.altitudeForRadius(so)
             
     def semiMajorAxisForOrbitalPeriod(self,orbitalPeriod):
+        if dbg: print('ksp.Body.semiMajorAxisForOrbitalPeriod()')
         sma = pow(self.gravitationalParameter*(orbitalPeriod/2./m.pi)**2,1./3.)
         return sma      
     
     def escapeVelocity(self,r=None):
+        if dbg: print('ksp.Body.escapeVelocity()')
         if not r: r = 0
         ra = self.radiusForAltitude(r)
         ev =m.sqrt(2*self.gravitationalParameter/ra)
@@ -85,21 +88,30 @@ class Body():
         return ev
     
     def radiusForAltitude(self,altitude):
-        print (self.radius, altitude)
+        if dbg: print('ksp.Body.radiusForAltitude()')
+        #print (self.radius, altitude)
         return self.radius+altitude
     
     def altitudeForRadius(self,radius):
+        if dbg: print('ksp.Body.altitudeForRadius()')
         return radius-self.radius
     
     def mass(self):
+        if dbg: print('ksp.Body.mass()')
         return self.gravitationalParameter/G
         
     def importDataForBody(self,body):
+        if dbg: print('ksp.Body.importDataForBody(%s)'%(body))
         filename = 'PhysicalParameters.txt'
 
-        f= open(filename)
+        buf = open(filename,'rb').read()
+        print(len(buf))
+        print(buf[168])
+        ubuf = buf.decode('utf8')
+        f= open(filename,'r')
         lines = f.readlines()
         f.close()
+
 
         for line in lines:
             if dbg: 'ksp.Body.importDataForBody'
@@ -158,23 +170,26 @@ class Orbit():
         else:
             #Load preset from file
             if body.name:
-                with open('OrbitalParameters.txt') as f:
-                    reader = csv.reader(f)
-                    for row in reader:
-                        if row[0].lower()==body.name:
-                            self.body = body
-                            self.parent = body.parent
-                            self.semiMajorAxis=float(row[3])
-                            self.eccentricity=float(row[4])
-                            self.inclination=float(row[5])
-                            self.argumentOfThePeriapsis=float(row[6])
-                            self.longitudeOfTheAscendingNode=float(row[7])
-                            self.meanAnomaly=float(row[8])
-                            self.periapsis=float(row[11])
-                            self.periapsisRadius=float(row[10])
-                            self.apoapsis=float(row[13])
-                            self.apoapsisRadius=float(row[12])
-                    f.close()
+                f = open('OrbitalParameters.txt','r')
+                lines = f.readlines()
+                f.close()
+                   
+                for line in lines:
+                    line = [l.strip() for l in line.split(',')] 
+                    row = line
+                    if row[0].lower()==body.name:
+                        self.body = body
+                        self.parent = body.parent
+                        self.semiMajorAxis=float(row[3])
+                        self.eccentricity=float(row[4])
+                        self.inclination=float(row[5])
+                        self.argumentOfThePeriapsis=float(row[6])
+                        self.longitudeOfTheAscendingNode=float(row[7])
+                        self.meanAnomaly=float(row[8])
+                        self.periapsis=float(row[11])
+                        self.periapsisRadius=float(row[10])
+                        self.apoapsis=float(row[13])
+                        self.apoapsisRadius=float(row[12])
 
     def specificAngularMomentum(self):
         #http://en.wikipedia.org/wiki/Specific_angular_momentum#Elliptical_orbit

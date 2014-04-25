@@ -23,6 +23,7 @@ class Orbit():
         mna = 0
         body = 'kerbin'
         
+
         if len(args)==0:
             True
         elif len(args)==1:
@@ -43,9 +44,9 @@ class Orbit():
         else:
             assert False, 'Bad trouble. Number of args not recognized'
         self.body = ksp.Body(str.lower(body))
-        print(body)
-        print(self.body.radius)
-        print(self.body)
+        #print(body)
+        #print(self.body.radius)
+        #print(self.body)
         
         #Eccentricity (degrees?)
         self.ecc = ecc
@@ -64,37 +65,47 @@ class Orbit():
         
         self.mu = self.body.gravitationalParameter
         
+        self.nu = 0
     
     def elements(self):
+        if dbg: print('ksporbit.Orbit.elements()')
         return self.ecc,self.sma,self.inc,self.lan,self.lpe,self.mna
     
     def calculatePath(self):
+        if dbg: print('ksporbit.Orbit.calculatePath()')
         theta = np.linspace(0,2*np.pi,1000)
         r = (self.sma*(1-self.ecc*self.ecc))/(1+self.ecc*np.cos(theta))
-        print(self.sma,self.ecc)
+        if dbg:print(self.sma,self.ecc)
         
         x = r*np.cos(theta)
         y = r*np.sin(theta)
         
         return x,y
     
-    def radiusAtTrueAnomaly(self,nu,**kwargs):
+
+    def radiusAtTrueAnomaly(self,nu=None,**kwargs):
+        if dbg: print('ksporbit.Orbit.radiusAtTrueAnomaly()')
+        if not nu:
+            nu = self.nu
         if 'p' in kwargs:
             return kwargs['p']/(1+self.ecc*np.cos(np.radians(nu)))
         
         #TrueAnomaly is angle between position and periapsis
-        print(self.sma,self.ecc)
+        if dbg:print(self.sma,self.ecc)
         return (self.sma*(1-self.ecc*self.ecc))/(1+self.ecc*np.cos(nu))
     
     def orbitalSpeed(self,r):
+        if dbg: print('ksporbit.Orbit.orbitalSpeed()')
         #Vis-viva equation
         #r is the distance between the orbiting bodies
         return np.sqrt(self.mu*(2./r-1./self.sma))
     
     def orbitalPeriod(self):
+        if dbg: print('ksporbit.Orbit.orbitalPeriod()')
         return 2*np.pi*np.sqrt(self.sma**3/self.mu)
     
     def specificOrbitalEnergy(self,r = 0):
+        if dbg: print('ksporbit.Orbits,specificOrbitalEnergy()')
         if r:
             v= self.orbitalSpeed(r)
             return v**2/2. - self.mu/r
@@ -102,42 +113,52 @@ class Orbit():
             return -self.mu/(2*self.sma)
     
     def specificRelativeAngularMomentum(self):
+        if dbg: print('ksporbit.Orbit.specificRelativeAngularMomentum()')
         #need to check if elliptical
         return np.sqrt(self.sma*(1-self.ecc*self.ecc)*self.mu)
     
     def semilatusRectum(self):
+        if dbg: print('ksporbit.Orbit.semilatusRectum()')
         #check shape
         return self.smb*self.smb/self.sma
     
     def meanMotion(self):
+        if dbg: print('ksporbit.Orbit.meanMotion()')
         mu = self.mu
-        print(mu)
+        if dbg:print(mu)
         return np.sqrt(self.mu/self.sma**3)
     
     def eccentricAnomaly(self,nu):
+        if dbg: print('ksporbit.Orbit.eccentricAnomaly()')
         return np.arccos((self.ecc + np.cos(nu))/(1+self.ecc*np.cos(nu)))
     
     def meanAnomaly(self,nu):
+        if dbg: print('ksporbit.Orbit.meanAnomaly()')
         E = self.eccentricAnomaly(nu)
         return E - self.ecc*np.sin(E)
     
     def timeOfFlight(self,nu):
+        if dbg: print('ksporbit.Orbit.timeOfFlight()')
         return (self.meanAnomaly(nu)-self.mna)/self.meanMotion()
     
     def position(self,nu):
+        if dbg: print('ksporbit.Orbit.position()')
         r = self.sma * (1-self.ecc*self.ecc)/(1+self.ecc*np.cos(nu))
         return r
     
     def flightPathAngle(self,nu):
+        if dbg: print('ksporbit.Orbit.flightPathAngle()')
         phi = np.arctan(self.ecc*np.sin(nu)/(1+self.ecc*np.cos(nu)))
         return phi
     
     def azimuthHeading(self):
+        if dbg: print('ksporbit.Orbit.azimuthHeading()')
         #cos(i)=cos(delta)*sin(beta)
-        print('crap')
+        if dbg:print('crap')
     
     def geocentricLatitude(self):
-        print('geocentricLatitude')
+        if dbg: print('ksporbit.Orbit.geocentricLatitude()')
+        if dbg:print('geocentricLatitude')
     
     
     
