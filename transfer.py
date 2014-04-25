@@ -2,6 +2,7 @@ import ksp
 import numpy as np
 import ksporbit as orbit
 
+
 dbg = True
 
 #def impulse(initialOrbit,endAltitude):
@@ -21,35 +22,73 @@ def changeAltitude(initialOrbit,finalAltitude):
 
     #semimajor axis of transfer orbit
     sma_tr = (r_s+r_f)*0.5
-
+    
     vi1 = np.sqrt(u/r_s)
     vf1 = np.sqrt(u/r_f)
 
     vi2 = np.sqrt(u*(2./r_s-1./sma_tr))
     vf2 = np.sqrt(u*(2./r_f-1./sma_tr))
-
-    return vi2-vi1
-
-
-
+    dvi = vi2-vi1
+    
+    
 
 
 class Transfer():
-    def __init__(self,initialOrbit,finalOrbit=None,**kwargs):
+    def __init__(self,initialOrbit,finalOrbit,**kwargs):
         
         if not initialOrbit.__class__== orbit.Orbit().__class__:# or not finalOrbit.__class__==orbit.Orbit().__class__:
             assert False, 'orbit is not of type ksporbit.Orbit()'
     
         self.initialOrbit = initialOrbit
         
-
+    
+        self.set_finalOrbit(finalOrbit)
+        
+        #gravitational parameter
+        #Right now, this assumes that remain in 1 sphere of influence
+        u =  self.initialOrbit.mu
+        
+        r_s = initialOrbit.radiusAtTrueAnomaly()
+        
+        nu = self.initialOrbit.nu
+        #nu = 2
+        r_f = self.finalOrbit.radiusAtTrueAnomaly(nu+np.pi*0.5)
+    
+        #a_s = initialOrbit.body.altitudeForRadius(r_s)
+        #a_f = initialOrbit.body.altitudeForRadius(r_f)
+    
+        #if dbg: print('transfer.changeAltitude from %s m to %s m. Altitude change: %s'%(a_s,a_f,a_f-a_s))
         
         
-        #self.finalOrbit = finalOrbit
+        #semimajor axis of transfer orbit
+        sma_tr = (r_s+r_f)*0.5
+        ecc_tr = orbit.eccentricity(r_s,r_f)
+        print('Flight Path Angle = ',self.initialOrbit.flightPathAngle(nu))
+        self.transferOrbit = orbit.Orbit(ecc_tr,sma_tr,0,0,0,0,'earth')
+        
+        
+        self.transferOrbit.flightPathAngle(2)
+        
+        
+        print('ECC: %s\tSMA: %s'%(ecc_tr,sma_tr))
+        
+        T = orbit.orbitalPeriod(sma_tr, u)
+        
+        print('ORBITAL PERIOD = ',T)
+        
+        vi1 = np.sqrt(u/r_s)
+        #vf1 = np.sqrt(u/r_f)
+    
+        vi2 = np.sqrt(u*(2./r_s-1./sma_tr))
+        ##vf2 = np.sqrt(u*(2./r_f-1./sma_tr))
+        dvi = vi2-vi1
         
         
         
         
+    def set_finalOrbit(self,finalOrbit):
+        self.finalOrbit = finalOrbit
+        return finalOrbit
         
         
 #     def delta_v(self):
@@ -116,20 +155,28 @@ class Transfer():
 if __name__ == '__main__':
 
     earth = ksp.Body('earth')
-    print('Earth radius = ',earth.radius)
-    radius = earth.radiusForAltitude(2e5)
-    print(radius)
-    o1 = orbit.Orbit(0,radius,0,0,0,0,'earth')
-    #o2 = orbit.Orbit(0,900000,0,0,0,0,'kerbin')
+    radius1 = earth.radiusForAltitude(2e5)
+    radius2 = earth.radiusForAltitude(3e5)
+    o1 = orbit.Orbit(0,radius1,0,0,0,0,'earth')
+    o2 = orbit.Orbit(0,radius2,0,0,0,0,'earth')
     
     nu1  = np.pi/6.
     nu2  = np.pi*0.5
     M1  = o1.meanAnomaly(nu1)
     M2  = o1.meanAnomaly(nu2)
 
+    
+
+    
+    o_transfer = orbit.Orbit
+    
+    t = Transfer(o1,o2)
 
 
 
+    
+    
+    
     n = o1.meanMotion()
     
     t = (M2-M1)/n
@@ -144,4 +191,6 @@ if __name__ == '__main__':
     #print(o1.flightPathAngle(np.pi))
     
     #transfer = Transfer(o1)
-    print(changeAltitude(o1,1e6))
+    #dv1 = changeAltitude(o1,1e6)
+    
+    #print()

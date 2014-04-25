@@ -11,8 +11,16 @@ class Conic():
         self.hyperbola = 3
 
     
-    
-        
+
+def orbitalPeriod(sma,mu):
+    if dbg: print('ksporbit.orbitalPeriod()')
+    assert float(sma) and float(mu)
+    return 2*np.pi*np.sqrt(sma**3/mu)
+
+def eccentricity(radius_apo,radius_per):
+    assert float(radius_apo) and float(radius_per)
+    return np.abs((radius_apo - radius_per))/(radius_apo + radius_per)
+
 class Orbit():
     def __init__(self,*args):
         ecc = 0
@@ -102,7 +110,7 @@ class Orbit():
     
     def orbitalPeriod(self):
         if dbg: print('ksporbit.Orbit.orbitalPeriod()')
-        return 2*np.pi*np.sqrt(self.sma**3/self.mu)
+        return orbitalPeriod(self.sma,self.mu)
     
     def specificOrbitalEnergy(self,r = 0):
         if dbg: print('ksporbit.Orbits,specificOrbitalEnergy()')

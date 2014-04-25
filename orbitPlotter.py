@@ -22,6 +22,7 @@ class OrbitPlotter():
         r,theta,phi = self.changeOrbitShape()
         x,y,z = jtools.sphericalToCartesian(r,theta,phi)
         return x,y,z
+    
     def changeInclination(self,r,theta,dInc):
         print(theta)
         
@@ -34,10 +35,7 @@ class OrbitPlotter():
         r = sma*(1-ecc*ecc)/(1+ecc*np.cos(phi))
         theta = np.zeros_like(phi)
         theta.fill(self.inc)#np.radians(self.inc))
-        print(theta)
-        print(r,theta,phi)
-        
-        r,theta,phi = self.orbitTransform(r,theta,phi, PHI = self.lan)
+        #r,theta,phi = self.orbitTransform(r,theta,phi, PHI = self.lan)
         #self.orbitTransform(r,theta,phi,'phi'=s)
         #x,y = jtools.polarToRectangular(r,theta)
         return r,theta,phi
