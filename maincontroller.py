@@ -14,25 +14,42 @@ import coordinates as crd
 #import orbitPlotter as oplot
 
 
-
+kspgui = None
 def checkPlotting():
-    earth = ksp.Body('earth')
-    radius1 = earth.radiusForAltitude(2e5)
-    radius2 = earth.radiusForAltitude(3e5)
+    kerbin = ksp.Body('kerbin')
+    radius1 = kerbin.radiusForAltitude(2e5)
+    radius2 = kerbin.radiusForAltitude(3e5)
     
-    o1 = orbit.Orbit(0,radius1,0,0,0,0,'earth')
-    o2 = orbit.Orbit(0,radius2,0,0,0,0,'earth') 
+    o1 = orbit.Orbit(0,radius1,0,0,0,0,'kerbin')
+    o2 = orbit.Orbit(0,radius2,0,0,0,0,'kerbin') 
     #print (o1.orbitalPeriod())
+    t = transfer.Transfer(o1,o2)
+    o3 = t.transferOrbit
+    
+    fig = kspgui.graphWidget.graph.canvas.fig
     
     op1 = oplot.OrbitPlotter(o1)
-    x,y,z=op1.getPath()
+    x1,y1,z1=op1.getPath()
     
-    fig = plt.figure()
+    op2 = oplot.OrbitPlotter(o2)
+    x2,y2,z2 = op2.getPath()
+    
+    op3 = oplot.OrbitPlotter(o3)
+    x3,y3,z3 = op3.getPath()
+    
+    
+
     ax = fig.add_subplot(111,projection='3d')
-    ax.plot(x,y,z)
+    ax.plot(x1,y1,z1,label='initial orbit')
+    ax.plot(x2,y2,z2,label='final orbit')
+    ax.plot(x3,y3,z3,label='transfer orbit 1')
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    plt.legend()
     fig.canvas.draw()
     
-    plt.show()
+    #plt.show()
 
     
 
@@ -43,6 +60,9 @@ if __name__=='__main__':
     mainWindow = gui.MainWindow()
     kspgui = gui.KSP_GUI(mainWindow)
     mainWindow.show()
+    
+    
+    
     
     checkPlotting()
 #     #ecc,inc,sma,lan,lpe,mna,bdy = telemachus.read_orbital_elements()

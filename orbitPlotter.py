@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import math as m
 import numpy as np
 import jtools
 import coordinates as crd
@@ -21,8 +20,7 @@ class OrbitPlotter():
     def getPath(self):
         #x,y= self.orbitShape()
         r,theta,phi = self.changeOrbitShape()
-        x,y,z = crd.sphericalToCartesian(r,theta,phi)
-        print(x,y,z)
+        x,y,z = crd.sphericalToCartesian(r,phi,theta)
         return x,y,z
     
     def changeInclination(self,r,theta,dInc):
@@ -33,16 +31,18 @@ class OrbitPlotter():
         sma = self.sma
         ecc = self.ecc
         
-        phi = np.linspace(0,2*m.pi,2048)
+        phi = np.linspace(0,2*np.pi,2048)
         r = sma*(1-ecc*ecc)/(1+ecc*np.cos(phi))
         theta = np.zeros_like(phi)
-        theta.fill(self.inc)#np.radians(self.inc))
+        theta.fill(self.inc)
+        
+        #np.radians(self.inc))
         #r,theta,phi = self.orbitTransform(r,theta,phi, PHI = self.lan)
         #self.orbitTransform(r,theta,phi,'phi'=s)
         #x,y = jtools.polarToRectangular(r,theta)
-        return r,theta,phi
+        return r,phi,theta
     
-    def orbitTransform(self,r,theta,phi,**kwargs):
+    def orbitTransform(self,r,phi,theta,**kwargs):
         dr = 0
         dtheta = 0
         dphi = 0
@@ -60,7 +60,7 @@ class OrbitPlotter():
         theta+=np.radians(dtheta)
         phi += np.radians(dphi)
         
-        return r,theta,phi
+        return r,phi,theta
         
         
         
