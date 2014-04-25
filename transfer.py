@@ -52,34 +52,34 @@ class Transfer():
         
         
         
-    def delta_v(self):
-        
-        st = self.parent.radiusForAltitude(startAltitude)
-        en = self.parent.radiusForAltitude(endAltitude)
-        
-        #semimajor axis of transfer orbit
-        a = (st+en)*0.5
-        
-        #initial velocity at the location of the first impulse
-        v_i1 = np.sqrt(u/st)
-        v_f1 = np.sqrt(u/en)
-        
-        #initial velocity of transfer orbit
-        v_i2 = np.sqrt(u*(2./st - 1./a))
-        #final velocity of transfer orbit (location of  second impulse
-        v_f2 = np.sqrt(u*(2./en-1./a))
-        
-        #delta v for impulse 1
-        dv_a =v_i2-v_i1
-        #delta v for impulse 2
-        dv_b = v_f2-v_f1
-
-        
-        dv = dv_a + dv_b
-        
-        #super(Transfer,self).__init__(ksp.Body)
-        
-        self.transferType = transferType
+#     def delta_v(self):
+#         
+#         st = self.parent.radiusForAltitude(startAltitude)
+#         en = self.parent.radiusForAltitude(endAltitude)
+#         
+#         #semimajor axis of transfer orbit
+#         a = (st+en)*0.5
+#         
+#         #initial velocity at the location of the first impulse
+#         v_i1 = np.sqrt(u/st)
+#         v_f1 = np.sqrt(u/en)
+#         
+#         #initial velocity of transfer orbit
+#         v_i2 = np.sqrt(u*(2./st - 1./a))
+#         #final velocity of transfer orbit (location of  second impulse
+#         v_f2 = np.sqrt(u*(2./en-1./a))
+#         
+#         #delta v for impulse 1
+#         dv_a =v_i2-v_i1
+#         #delta v for impulse 2
+#         dv_b = v_f2-v_f1
+# 
+#         
+#         dv = dv_a + dv_b
+#         
+#         #super(Transfer,self).__init__(ksp.Body)
+#         
+#         self.transferType = transferType
     
 
     def hohmannTransfer(self,startAltitude, endAltitude, **kwargs):
