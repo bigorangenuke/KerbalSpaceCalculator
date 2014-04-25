@@ -1,12 +1,12 @@
 #################
-#Neutron Diffusion Core
+##KSP
 #################
-*.core
-
+*.pyc
+__pycache__/*
 #################
 ## Eclipse
 #################
-*.pyc
+
 *.pydevproject
 .project
 .metadata
