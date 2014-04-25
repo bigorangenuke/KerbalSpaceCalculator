@@ -22,6 +22,7 @@ class OrbitPlotter():
         #x,y= self.orbitShape()
         r,theta,phi = self.changeOrbitShape()
         x,y,z = crd.sphericalToCartesian(r,theta,phi)
+        print(x,y,z)
         return x,y,z
     
     def changeInclination(self,r,theta,dInc):

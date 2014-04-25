@@ -44,7 +44,6 @@ class Orbit():
         elif len(args)==1:
             arg = args[0]
             if arg.__class__==ksp.Body().__class__:
-                print('its a body!')
                 self.body = arg
                 
                 
@@ -114,16 +113,6 @@ class Orbit():
         if dbg: print('ksporbit.Orbit.elements()')
         return self.ecc,self.sma,self.inc,self.lan,self.lpe,self.mna
     
-    def calculatePath(self):
-        if dbg: print('ksporbit.Orbit.calculatePath()')
-        theta = np.linspace(0,2*np.pi,1000)
-        r = (self.sma*(1-self.ecc*self.ecc))/(1+self.ecc*np.cos(theta))
-        if dbg:print(self.sma,self.ecc)
-        
-        x = r*np.cos(theta)
-        y = r*np.sin(theta)
-        
-        return x,y
     
 
     def radiusAtTrueAnomaly(self,nu=None,**kwargs):

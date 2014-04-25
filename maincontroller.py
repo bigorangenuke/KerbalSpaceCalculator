@@ -22,6 +22,7 @@ def checkPlotting():
     
     o1 = orbit.Orbit(0,radius1,0,0,0,0,'earth')
     o2 = orbit.Orbit(0,radius2,0,0,0,0,'earth') 
+    #print (o1.orbitalPeriod())
     
     op1 = oplot.OrbitPlotter(o1)
     x,y,z=op1.getPath()
@@ -30,6 +31,7 @@ def checkPlotting():
     ax = fig.add_subplot(111,projection='3d')
     ax.plot(x,y,z)
     fig.canvas.draw()
+    
     plt.show()
 
     

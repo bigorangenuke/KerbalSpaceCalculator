@@ -52,23 +52,36 @@ def cartesianToSpherical(*args,**kwargs):#x,y,z = 0):
 
 def sphericalToCartesian(*args,**kwargs):#r,phi,theta=None):
 	if dbg:print('coordinates.sphericalToCartesian')
-	u = np.asarray(args)
-	r = u[:,0]
-	phi = u[:,1]
-	theta = u[:,2]
+	isVector = False
+
+	r = None
+	phi = None
+	theta = None
+	if 'vector' in kwargs:
+		isVector = True
+		u = np.asarray(args)
+		r = u[:,0]
+		phi = u[:,1]
+		theta = u[:,2]
+	else:
+		r = args[0]
+		phi = args[1]
+		theta=args[2]
 	
-	
-	
+
 	if kwargs:
 		print('coordinates.sphericalToCartesian kwargs passed')
 	
-
-
 	x = r*np.sin(theta)*np.cos(phi)
 	y = r*np.sin(theta)*np.sin(phi)
 	z = r*np.cos(theta)
 	
-	return np.column_stack((x,y,z))
+	
+	
+	if isVector:
+		return np.column_stack((x,y,z))
+	else:
+		return x,y,z
 
 def cylindricalToCartesian(*args,**kwargs):
 	u = np.asarray(args)
