@@ -2,16 +2,8 @@ import numpy as np
 
 import telemachus_plugin as tele
 import ksp
+
 dbg = True
-
-class Conic():
-    def __init__(self):
-        self.circle = 0
-        self.ellipse = 1
-        self.parabola = 2
-        self.hyperbola = 3
-
-    
 
 def orbitalPeriod(sma,mu):
     if dbg: print('ksporbit.orbitalPeriod()')
@@ -24,8 +16,55 @@ def eccentricity(radius_apo,radius_per):
 
 
 
+class Satellite():
+    def __init__(self,orbit,*args,**kwargs):
+        
+        
+        self.orbit = orbit
+        
+ 
+        
+        lpe = self.orbit.lpe
+        nu = self.orbit.nu
+        
+        
+        
+        #dr = self.orbit.gravitationalParameter/self.orbit.
+        
+        zrot = -(lpe+nu)
+        
+
+        rloc = np.zeros(3)
+        vloc = np.zeros_like(rloc)
+        
+        rloc[0] = r
+        
+        rglob = np.zeros_like(rloc)
+        vglob = np.zeros_like(vloc)
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+     
+        
+        
+
+ 
+        
+        
 class Orbit():
-    
     def __init__(self,*args):
         ecc = 0
         sma = 1e6
@@ -35,8 +74,10 @@ class Orbit():
         mna = 0
         body = 'kerbin'
         
+        self.r = np.empty(3)
+        self.v = np.empty_like(self.r)
+
         self.body=None
-        
         
 
         if len(args)==0:
@@ -44,9 +85,7 @@ class Orbit():
         elif len(args)==1:
             arg = args[0]
             if arg.__class__==ksp.Body().__class__:
-                self.body = arg
-                
-                
+                self.body = arg  
             elif len(arg)>1:
                 ecc = arg[0]
                 sma = arg[1]
@@ -173,16 +212,19 @@ class Orbit():
         if dbg: print('ksporbit.Orbit.timeOfFlight()')
         return (self.meanAnomaly(nu)-self.mna)/self.meanMotion()
     
-    def position(self,nu):
-        if dbg: print('ksporbit.Orbit.position()')
-        r = self.sma * (1-self.ecc*self.ecc)/(1+self.ecc*np.cos(nu))
-        return r
-    
-    def flightPathAngle(self,nu):
-        if dbg: print('ksporbit.Orbit.flightPathAngle()')
-        phi = np.arctan(self.ecc*np.sin(nu)/(1+self.ecc*np.cos(nu)))
-        return phi
-    
+#     def position(self,nu):
+#         if dbg: print('ksporbit.Orbit.position()')
+#         r = self.sma * (1-self.ecc*self.ecc)/(1+self.ecc*np.cos(nu))
+#         return r
+#     
+#     def flightPathAngle(self,nu):
+#         if dbg: print('ksporbit.Orbit.flightPathAngle()')
+#         phi = np.arctan(self.ecc*np.sin(nu)/(1+self.ecc*np.cos(nu)))
+#         return phi
+
+        
+        
+        
     def azimuthHeading(self):
         if dbg: print('ksporbit.Orbit.azimuthHeading()')
         #cos(i)=cos(delta)*sin(beta)
@@ -192,39 +234,40 @@ class Orbit():
         if dbg: print('ksporbit.Orbit.geocentricLatitude()')
         if dbg:print('geocentricLatitude')
     
-    def p(self):
-        return np.tan(self.inc*0.5)*np.sin(self.lan) 
-    
-    def q(self):
-        return np.tan(self.inc*0.5)*np.cos(self.lan)
+#     def p(self):
+#         return np.tan(self.inc*0.5)*np.sin(self.lan) 
+#     
+#     def q(self):
+#         return np.tan(self.inc*0.5)*np.cos(self.lan)
 
 
-    def radiusVector(self,nu=None):
+#     def radiusVector(self,nu=None):
+#         nu = np.pi*0.4
+#         if not nu:
+#             nu = np.linspace(0,2*np.pi,1000)
+#             
+#         lan = self.lan
+#         mna = self.mna
+#         i = self.inc
+#         
+#         #lan = np.pi*0.2
+#         #i = 0.0001
+#         #mna = 0.001
+#         p=self.p()
+#         #p =np.tan(i*0.5)*np.sin(lan) 
+#         #print(nu)
+#         #print(p,lan,mna,i)
+#         
+#         rx = p*(np.cos(lan)*np.cos(mna+nu)-np.sin(lan)*np.cos(i)*np.sin(mna+nu))
+#         ry = p*(np.sin(lan)*np.cos(mna+nu)+np.cos(lan)*np.cos(i)*np.sin(mna+nu))
+#         rz = p*np.sin(i)*np.sin(mna+nu)
+#         
+#         print(rx,ry,rz)
         
-        if not nu:
-            nu = np.linspace(0,2*np.pi,1000)
-            
-        lan = self.lan
-    
-        mna = self.mna
-        i = self.inc
-        
-        lan = np.pi*0.2
-        i = 0.0001
-        mna = 0.001
-        
-        
-        p =np.tan(i*0.5)*np.sin(lan) 
-        print(nu)
-        
-        rx = p*(np.cos(lan)*np.cos(mna+nu)-np.sin(lan)*np.cos(i)*np.sin(mna+nu))
-        ry = p*(np.sin(lan)*np.cos(mna+nu)+np.cos(lan)*np.cos(i)*np.sin(mna+nu))
-    
-        rz = p*np.sin(i)*np.sin(mna+nu)
         
         return np.asarray([rx,ry,rz])
     
-    
+        
 
 
     

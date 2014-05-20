@@ -18,32 +18,32 @@ kspgui = None
 def checkPlotting():
     kerbin = ksp.Body('kerbin')
     radius1 = kerbin.radiusForAltitude(2e5)
-    radius2 = kerbin.radiusForAltitude(3e5)
+    #radius2 = kerbin.radiusForAltitude(3e5)
     
     o1 = orbit.Orbit(0,radius1,0,0,0,0,'kerbin')
-    o2 = orbit.Orbit(0,radius2,0,0,0,0,'kerbin') 
+    #o2 = orbit.Orbit(0,radius2,0,0,0,0,'kerbin') 
     
  
-    t = transfer.Transfer(o1,o2)
-    o3 = t.transferOrbit
+    #t = transfer.Transfer(o1,o2)
+    #o3 = t.transferOrbit
     
     fig = kspgui.graphWidget.graph.canvas.fig
     
     op1 = oplot.OrbitPlotter(o1)
     x1,y1,z1=op1.getPath()
     
-    op2 = oplot.OrbitPlotter(o2)
-    x2,y2,z2 = op2.getPath()
+#     op2 = oplot.OrbitPlotter(o2)
+#     x2,y2,z2 = op2.getPath()
      
-    op3 = oplot.OrbitPlotter(o3)
-    x3,y3,z3 = op3.getPath()
+#     op3 = oplot.OrbitPlotter(o3)
+#     x3,y3,z3 = op3.getPath()
     
     
 
     ax = fig.add_subplot(111,projection='3d')
     ax.plot(x1,y1,z1,label='initial orbit')
 #     ax.plot(x2,y2,z2,label='final orbit')
-    ax.plot(x3,y3,z3,label='transfer orbit 1')
+#     ax.plot(x3,y3,z3,label='transfer orbit 1')
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')
@@ -104,10 +104,7 @@ if __name__=='__main__':
     
     
     #op = oplot.OrbitPlotter(o1)
-    #x,y,z =op.getPath()
-    
-    
-#     
+     #x,y,z =op.getPath(#     
 #     t = transfer.Transfer(o1,o2)
 #     o3 = t.transferOrbit
 # 
@@ -115,7 +112,7 @@ if __name__=='__main__':
 #     op =oplot.OrbitPlotter(o1)
 #     X,Y,Z=op.getPath()
 #     kspgui.graphWidget.plotOrbit(X,Y,Z)
-    
+   
     
     
 #     orbt = [bdy,ecc,inc,sma,lan,lpe,mna]

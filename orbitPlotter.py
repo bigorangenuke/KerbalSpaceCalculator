@@ -26,28 +26,40 @@ class OrbitPlotter():
         x,y,z = crd.sphericalToCartesian(r,phi,theta)
         
 
+        h = self.ecc*np.sin(self.lpe + self.lan)
+        k = self.ecc*np.cos(self.lpe + self.lan)
+        p = np.tan(self.inc*0.5)*np.sin(self.lan)
+        q = np.tan(self.inc*0.5)*np.cos(self.lan)
+        
+        #meanLongitude = np.arctan(p,q)
+    
+        #
         return x,y,z
     
     def changeInclination(self,r,theta,dInc):
         print(theta)
         
+        
+        
+    '''  
     def changeOrbitShape(self):
         
         sma = self.sma
         ecc = self.ecc
         inc = np.pi*0.5-self.inc
         
-        phi = np.linspace(0,2*np.pi,2048)
+        phi = np.linspace(0,2*np.pi,500)
         r = sma*(1-ecc*ecc)/(1+ecc*np.cos(phi))
         
         theta_dir = np.asarray([0,0,1])
-
-        R = self.orbit.radiusVector()
         
+        #R = self.orbit.radiusVector()
+#         print('======R=======')
+#         print(R)
         
-        theta=np.dot(theta_dir,R[0,:])/(np.linalg.norm(R[0,:])*np.linalg.norm(theta_dir))
+        #theta=np.dot(theta_dir,R[0,:])/(np.linalg.norm(R[0,:])*np.linalg.norm(theta_dir))
 
-            
+        theta = np.empty_like(phi)
         
         
         
@@ -57,7 +69,7 @@ class OrbitPlotter():
         #self.orbitTransform(r,theta,phi,'phi'=s)
         #x,y = jtools.polarToRectangular(r,theta)
         return r,phi,theta
-    
+
     def orbitTransform(self,r,phi,theta,**kwargs):
         dr = 0
         dtheta = 0
@@ -78,7 +90,7 @@ class OrbitPlotter():
         
         return r,phi,theta
         
-        
+    '''
         
             
             

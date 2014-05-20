@@ -148,41 +148,40 @@ def unitCartesianToSpherical(theta,phi,x_hat,y_hat,z_hat = 0):
 
 def x_rotation(theta):
 	if dbg:print('coordinates.x_rotation')
-	xr = np.zeros((3,3))
-	
-# 	[[1,0,0],
-# 	[0,cos,-sin],
-# 	0,sin,cos]
 	r = np.zeros((3,3))
-	r[0,0] = np.cos(theta)
-	r[2,0] = np.sin(theta)
-	r[1,1] = 1
-	r[0,2] = -np.sin(theta)
-	r[2,2] = np.cos(theta)
-	
-	return xr
 
-def y_rotation(theta):
-	if dbg:print('coordinates.y_rotation')
-	r = np.zeros((3,3))
 	r[0,0] = 1
 	r[1,1] = np.cos(theta)
 	r[2,1] = -np.sin(theta)
 	r[1,2] = np.sin(theta)
 	r[2,2] = np.cos(theta)
 	
-
+def y_rotation(theta):
+	if dbg:print('coordinates.y_rotation')
+# 	[[1,0,0],
+# 	[0,cos,-sin],
+# 	0,sin,cos]
+	r = np.zeros((3,3))
+	
+	
+	r[0,0] = np.cos(theta)
+	r[2,0] = np.sin(theta)
+	r[1,1] = 1
+	r[0,2] = -np.sin(theta)
+	r[2,2] = np.cos(theta)
+	
 	return r
+
 
 def z_rotation(theta):
 	if dbg:print('coordinates.z_rotation')
-	zr = np.zeros((3,3))
-	zr[0,0] = np.cos(theta)
-	zr[1,1] = np.cos(theta)
-	zr[2,2] = 1
-	zr[0,1] = np.sin(theta)
-	zr[1,0] = -np.sin(theta)
-	return zr
+	r = np.zeros((3,3))
+	r[0,0] = np.cos(theta)
+	r[1,1] = np.cos(theta)
+	r[2,2] = 1
+	r[0,1] = np.sin(theta)
+	r[1,0] = -np.sin(theta)
+	return r
 
 def rotation(**kwargs):
 	if dbg:print('coordinates.rotation')
