@@ -1,11 +1,13 @@
 #Parsing parts files
 import os
-pfn = 'F://Games//KMP//Squad//Parts//FuelTank'
+pfn = 'F://Games//KMP//Squad//Parts//Engine'
 import itertools
 from collections import Counter
 from pyparsing import nestedExpr
 
 import re
+
+
 
 class Resource():
     def __init__(self,resourceLines):
@@ -39,14 +41,71 @@ class Resource():
         
     def __repr__(self):
         return "name = %s\namount = %s\nmaxAmount = %s\n"%(self.name,self.amount, self.maxAmount)      
+
+class Module():
+    def __init__(self,modulelines):
+        self.lines=modulelines
+        
+def readPartFile(partFile):
+    
+    f = open(partFile,'r')
+    lines = f.readlines()
+    f.close()
+
+    startlines = st = [i for i,line in enumerate(lines) if '{' in line]
+    endlines = en = [i for i,line in enumerate(lines) if '}' in line]
+
+    assert len(startlines)==len(endlines),'File incomplete'
+
+    #Add the lists together
+    dl = st+en
+    
+    #O
+    modlst = []
+
+    x = 0
+    
+    #When the index comes from start positions, a new list object is added to modlst with a zero in place of the last item
+    #When the index comes from an end position, it walks backwards up the modlst until it find a list that has a zero in the last item
+    #This value is accepted and the 
+    for d in dl:
+        print(d)
+        #print (lst)
+        if d in st: 
+            x+=1
+            modlst.append([d,0])
             
+        if d in en:
+            i = 0
+            x-=1
+            for i in reversed(range(len(modlst))):
+                ck = modlst[-i]
+                i+=1 
+                if ck[-1]==0:
+                    ck[-1] = d
+                    break
+                
+    print(modlst)
+    
+
+    
+
+
+    
+         
+        
+        
+    
+        
 class Part():
     def __init__(self,partFile):
+        
         self.partFile = partFile
         self.resources = []
-        self.readPartFile()
+        readPartFile(partFile)
         
         
+
     def readPartFile(self):
         with open(self.partFile,'r') as f:
             cntr = None
@@ -57,14 +116,17 @@ class Part():
             ix = [i for i,x in enumerate(lines) if '{' in x]
             lines=lines[ix[0]:]
             
-            lstr = ''
-            for line in lines:
-                lstr+=line
-    
-            nexpr=nestedExpr('{','}').parseString(lstr).
-        
-            for expr in nexpr:
-                print(expr)       
+            for i,line in enumerate(lines):
+                if '{' in line:
+                    cntr = 1
+                    
+                        
+                        
+                    
+            
+            
+       
+          
         print('done reading file')
 #             
 #             
