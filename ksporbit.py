@@ -3,7 +3,7 @@ import numpy as np
 import telemachus_plugin as tele
 import ksp
 
-dbg = True
+dbg = False
 
 def orbitalPeriod(sma,mu):
     if dbg: print('ksporbit.orbitalPeriod()')
@@ -23,49 +23,10 @@ class Satellite():
         self.orbit = orbit
         
  
-        
-        lpe = self.orbit.lpe
-        nu = self.orbit.nu
-        
-        
-        
-        #dr = self.orbit.gravitationalParameter/self.orbit.
-        
-        zrot = -(lpe+nu)
-        
 
-        rloc = np.zeros(3)
-        vloc = np.zeros_like(rloc)
-        
-        rloc[0] = r
-        
-        rglob = np.zeros_like(rloc)
-        vglob = np.zeros_like(vloc)
-        
-        
-        
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-     
-        
-        
-
- 
-        
         
 class Orbit():
-    def __init__(self,*args):
+    def __init__(self,*args,**kwargs):
         ecc = 0
         sma = 1e6
         inc = 0
@@ -74,9 +35,10 @@ class Orbit():
         mna = 0
         body = 'kerbin'
         
+        nu = 0
         self.r = np.empty(3)
         self.v = np.empty_like(self.r)
-
+        
         self.body=None
         
 
@@ -128,6 +90,26 @@ class Orbit():
         #print(body)
         #print(self.body.radius)
         #print(self.body)
+        if 'body' in kwargs:
+            self.body = ksp.Body(kwargs['body'])
+        mu = self.body.gravitationalParameter
+        if 'ecc' in kwargs:
+            ecc = kwargs['ecc']
+        if 'sma' in kwargs:
+            sma = kwargs['sma']
+        if 'inc' in kwargs:
+            inc = kwargs['inc']
+        if 'lan' in kwargs:
+            lan = kwargs['lan']
+        if 'lpe' in kwargs:
+            lpe = kwargs['lpe'] 
+        if 'mna' in kwargs:
+            mna = kwargs['mna'] 
+        if 'mu' in kwargs:
+            mu = kwargs['mu']
+        if 'nu' in kwargs:
+            nu = kwargs['nu']
+        
         
         #Eccentricity (degrees?)
         self.ecc = ecc
@@ -144,14 +126,40 @@ class Orbit():
         #Mean anomaly at epoch, UT = 0 (radians)
         self.mna = mna
         
-        self.mu = self.body.gravitationalParameter
+        #gravitational parameter
+        self.mu = mu
+        #true anomaly
+        self.nu = nu
+    def __repr__(self):
+        elm = dict(self.elements(t = 'dict'))
+        str = ''.join(('*'*12,'ORBIT','*'*12,'\n'))
         
-        self.nu = 0
-    
-    def elements(self):
+        for k,v in elm.items():
+            str+='%s:\t%s\n'%(k,v)
+        str += '*'*30
+        return str
+    def elements(self,**kwargs):
         if dbg: print('ksporbit.Orbit.elements()')
+        
+        
+        if 't' in kwargs:
+            tkw = kwargs['t']
+            if tkw=='dict':
+                elm = {}
+                elm['ecc'] = self.ecc
+                elm['sma'] = self.sma
+                elm['inc'] = self.inc
+                elm['lan'] = self.lan
+                elm['lpe'] = self.lpe
+                elm['mna'] = self.mna
+                return elm
+        
         return self.ecc,self.sma,self.inc,self.lan,self.lpe,self.mna
     
+#     def set_apses(self,ap,pe):
+#         
+        
+        
     
 
     def radiusAtTrueAnomaly(self,nu=None,**kwargs):
@@ -265,9 +273,11 @@ class Orbit():
 #         print(rx,ry,rz)
         
         
-        return np.asarray([rx,ry,rz])
+        
     
         
+
+    
 
 
     
