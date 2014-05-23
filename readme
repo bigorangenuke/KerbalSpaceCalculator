@@ -1,14 +1,18 @@
-KERBAL SPACE PROGRAM MISSION CONTROL
-
-Last updated by 20141204
+KERBAL SPACE PROGRAM MISSION CONTROL (WIP)
 
 =====Dependencies======
-Python 3.3.4
-Scipy stack
+Python 3.4.x
+SciPy stack
 PyQt4
 
-=====Installation Instructions=====
-On windows, use Gohlke's executable installers
-On OSX, use macports.  If you can't figure it out, ask me.
+=====Installation=====
+On windows,  Gohlke's executable installers are nifty
+http://www.lfd.uci.edu/~gohlke/pythonlibs/
 
-On KSP: Telemachus plugin
+=====Notes=======
+There are a bunch of modules going on here that may or may not work.
+And they are organized terribly.
+Eventually I will get this cleaned up
+
+
+
