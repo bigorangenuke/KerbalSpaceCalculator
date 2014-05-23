@@ -1,40 +1,121 @@
 #Parsing parts files
 import os
-pfn = 'F://Games//KMP//Squad//Parts//FuelTank'
+import glob
+pfn = 'F://Games//KMP//Squad//Parts//'
 
 
 from enum import Enum
+types = ['PART','RESOURCE','MODULE','PROPELLANT']
 
+class ModuleType(Enum):
+    PART = 0
+    RESOURCE = 1
+    MODULE = 2
+    PROPELLANT = 3
+    GENERIC = 4
+    ENGINE = 5
+
+#find the curly braces in the part.cfg file
+def findModules(lines):
+    startlines  = [i for i,line in enumerate(lines) if '{' in line]
+    endlines  = [i for i,line in enumerate(lines) if '}' in line]
+    
+    assert len(startlines)==len(endlines),'File incomplete\n%s'%(lines)
+    return startlines,endlines
+
+#removes None values from a list without changing the order of the values
+def removeNone(lines):
+    return [line for line in lines if line is not None]
+
+
+#removes lines that are considered comments
+#This does not allow comments at the end of a line
+def removeComments(lines,delim = '//'):
+    for i,line in enumerate(lines):
+        if delim in line[:5]:
+            lines[i] = None
+    return removeNone(lines)
+
+#remove the header words such as PART and PROPELLANT
+#deletes the whole line that contains the type word
+def removeHeaders(lines):
+    
+    for i in range(len(lines)):
+        if any(thetype in lines[i] for thetype in types):
+            lines[i] = None
+    
+    return lines
+
+#remove lines that contain curly braces
+def removeBraces(lines):
+    lines = removeNone(lines)
+    for i, line in enumerate(lines):
+        if '{' in line or '}' in line:
+            lines[i]=None
+    return lines
+
+                 
+def removeSubModules(lines):
+
+    x = 0
+    for i,line in enumerate(lines):
+        
+        if '{' in line:
+            x +=1
+
+        if x>1:
+            lines[i]=None
+            
+        if '}' in line:
+            x -=1
+
+        if any(thetype in line for thetype in types):
+            lines[i] = None
+    
+           
+    lines = removeBraces(lines)
+    return removeNone(lines)
+
+#splits the list
+def linesToDict(lines):
+    d = {}
+    
+    for i,l in enumerate(lines):
+        
+        k = l[0].strip()
+        v = l[1].strip()
+        if v.isdigit():
+            v = float(v)
+        
+        d[k]=v
+        
+    return d
+
+#===============================================================================
+# Reads the part.cfg file
+#===============================================================================
 def readPartFile(partFile):
-    #print(partFile)
     f = open(partFile, 'r')
     lines = f.readlines()
     f.close()
+    lines= removeComments(lines)
+    
     lines = [line.strip() for line in lines if line != '\n']
+
     for i,line in enumerate(lines):
         if '=' in line:
             lines[i] = line.split('=')
     
     lines = [line for line in lines if line]
-    print(lines)
-    
-    startlines = st = [i for i,line in enumerate(lines) if '{' in line]
-    
-    for ln in startlines:
-        if '{' in lines[ln]:
-            print(ln)
-    
-    
-    endlines = en = [i for i,line in enumerate(lines) if '}' in line]
-    
-    assert len(startlines)==len(endlines),'File incomplete'
 
+    st,en = findModules(lines)
+    
+    assert len(st)==len(en),'File incomplete'
+    
     #Add the lists together
     dl = st+en
     
-    #O
     modlst = []
-
     x = 0
     
     #===========================================================================
@@ -75,12 +156,18 @@ def readPartFile(partFile):
         #print(lines[b])
         
         
-        mln = lines[a-1:b+1]
+        mln = None
         
         
-        print('a,b = ',a,b)
- 
-        print('LINES:\t',lines[a-1],lines[a],lines[b],lines[b])
+        
+    
+        if any(thetype in lines[a] for thetype in types):
+            mln = lines[a:b+1]
+        else:
+            mln = lines[a-1:b+1]
+            
+        
+        #print('LINES:\t',lines[a-1],lines[a],lines[b],lines[b])
         #print(a -1,b+1)
         #print(mln)
         
@@ -94,20 +181,22 @@ def readPartFile(partFile):
         
         #print(a,b)
         nm = None
-        if mt =='PART':
+        if 'PART' in mt:
             moduleType = ModuleType.PART
             nm = Part(mln,ix = m)
-        elif mt=='RESOURCE':
+        elif 'RESOURCE' in mt:
             moduleType = ModuleType.RESOURCE
             nm = Resource(mln,ix = m)
-        elif mt=='PROPELLANT':
+        elif 'PROPELLANT' in mt:
             nm = Propellant(mln,ix = m)
             moduleType = ModuleType.PROPELLANT
-        elif mt=='MODULE':
+        elif 'MODULE' in mt:
             moduleType = ModuleType.MODULE
             nm = Module(mln,ix=m)
         else:
-            assert False,'Module type not recognized'
+            moduleType = ModuleType.GENERIC
+            nm = GenericModule(mln,ix=m)
+            #assert False,'Module type %s not recognized'%(mt)
         
         
         
@@ -122,17 +211,19 @@ def readPartFile(partFile):
                     n.parent = m
                     m.children.append(n)
     
+    #Check that no module has the same module as parent and child
+    for m in mods:
+        if m.parent and m.children:
+            if m.parent in m.children:
+                assert False,'Bad trouble.  Parent-Child hierarchy is broken.  Corrupt file or error in the parser'
+    return mods
 #     for m in mods:
 #         print(m.parent,m.children)
     
 
 
 
-class ModuleType(Enum):
-    PART = 0
-    RESOURCE = 1
-    MODULE = 2
-    PROPELLANT = 3
+
 
 
 #===============================================================================
@@ -144,150 +235,153 @@ class Asset():
             ix = kwargs['ix']
             self.a = ix[0]
             self.b = ix[1]
-            
+        self.name = None
+        self.moduleType = None
+        self.dict = {}
+        
         self.parent = None
         self.children = []
+    
+    def __repr__(self):
+        return '%s %s'%(self.moduleType,self.name)
+    
+        
+    
+class GenericModule(Asset):
+    def __init__(self,lines,**kwargs):
+        Asset.__init__(self,**kwargs)
+        self.moduleType = ModuleType.GENERIC
+        self.dict=linesToDict(removeSubModules(lines))
+        self.mapDictToAttr(self.dict)
+    def mapDictToAttr(self,d):
+        if 'name' in d:
+            self.name = d['name']
+        
             
+        
+class Propellant(Asset):
+    def __init__(self,lines,**kwargs):
+        Asset.__init__(self,**kwargs)
+        self.moduleType = ModuleType.PROPELLANT
+        self.set_dict(linesToDict(removeSubModules(lines)))
+        
+        self.ratio = None
+    
+    def set_dict(self,d):
+        
+        self.mapDictToAttr(d)
+        self.dict = d
+        
+    def mapDictToAttr(self,d):
+        if 'name' in d:
+            self.name = d['name']
+        if'ratio' in d:
+            self.amount = d['ratio']
+    
     
 
-class Propellant(Asset):
-    def __init__(self,**kwargs):
-        Asset.__init__(self,**kwargs)
-
 class Resource(Asset):
-    def __init__(self,resourceLines,**kwargs):
+    def __init__(self,lines,**kwargs):
         Asset.__init__(self,**kwargs)
-        
-        self.name = None
+        self.moduleType = ModuleType.RESOURCE
         self.amount = None
         self.maxAmount = None
-        #print(resourceLines)
-        self.readLines(resourceLines)
-
         
-    def readLines(self,lines):
+        self.set_dict(linesToDict(removeSubModules(lines)))
         
-            
-        thelines =  [line.split('=') for line in lines if '=' in line]
-        md={}
-        for line in thelines:
-#             print(line)
-            k = line[0].strip()
-            v = line[1].strip()
-            if v.isdigit():
-                v = float(v)
-            #print(k,v)
-            md[k]=v
-#         print(md) 
-        if 'name' in md:
-            self.name = md['name']
-        if'amount' in md:
-            self.amount = md['amount']
-        if 'maxAmount' in md:
-            self.maxAmount= md['maxAmount']
+    def set_dict(self,d):
         
-    def __repr__(self):
-        return "name = %s\namount = %s\nmaxAmount = %s\n"%(self.name,self.amount, self.maxAmount)      
+        self.mapDictToAttr(d)
+        self.dict = d
+        
+        
+    def mapDictToAttr(self,d):
+        if 'name' in d:
+            self.name = d['name']
+        if'amount' in d:
+            self.amount = d['amount']
+        if 'maxAmount' in d:
+            self.maxAmount= d['maxAmount']   
 
 
     
 class Module(Asset):
-    def __init__(self,modulelines,**kwargs):
+    def __init__(self,lines,**kwargs):
         Asset.__init__(self,**kwargs)
-        #print(modulelines)
+        self.moduleType = ModuleType.MODULE
+        self.set_dict(linesToDict(removeSubModules(lines)))
         
-        self.lines=modulelines
+    def set_dict(self,d):
+        self.mapDictToAttr(d)
+        self.dict = d
     
-        
-
-    
-    def __repr__(self):
-        return 'Module(%s,%s)'%(self.a,self.b)
-    
-
-    
-    
-
+    def mapDictToAttr(self,d):
+        if 'name' in d:
+            self.name = d['name']
+        if'amount' in d:
+            self.amount = d['amount']
+        if 'maxAmount' in d:
+            self.maxAmount= d['maxAmount']   
     
         
 class Part(Asset):
-    def __init__(self,partFile,**kwargs):
-        Asset.__init__(self,**kwargs)        
-
-#     def readPartFile(self):
-#         with open(self.partFile,'r') as f:
-#             cntr = None
-#             
-#             #lines = [line.strip() for line in f.readlines()]
-#             lines = f.readlines()
-#             
-#             ix = [i for i,x in enumerate(lines) if '{' in x]
-#             lines=lines[ix[0]:]
-#             
-#             for i,line in enumerate(lines):
-#                 if '{' in line:
-#                     cntr = 1
-                    
-                        
+    def __init__(self,partLines,**kwargs):
+        Asset.__init__(self,**kwargs)   
+        self.moduleType = ModuleType.PART     
+        self.pdict = self.readLines(partLines)
+        self.mapDictToAttr(self.pdict)
         
-        print('done reading file')
-#             
-#             
-#             modi = [i for i,x in enumerate(lines) if '{' in x]
-#             modj = [i for i,x in enumerate(lines) if '}' in x]
-#             
-# 
-#             
-#             modules =[]
-#             
-#             ii = modi[0]
-#             jj = modj[-1]
-#             modi = modi[1:]
-#             modj = modj[:-1]
-# #             print(modi,modj)
-#             
-#             for i,x in enumerate(modi):
-#                 modules.append(lines[modi[i]-1:modj[i]+1])
-#             
-#             
-#             for module in modules:
-#                
-#                 if module[0]=='RESOURCE':
-#                     newresource = Resource(module)
-#                     self.resources.append(newresource)
-#                 elif module[0]=='MODULE':
-#                     print('do module stuff')
-#            
-#             
-#             
-#             
-#             
-            
-#             for i in range(len(modi)-1):
-#                 #print(modi[i-1],modj[i])
-#                 ii = modi[i-1]
-#                 jj = modj[len(modi)-i-1]
-#                 items.append(lines[ii:jj+1])
-#                 print(ii,jj+1)
-            
+
+    def readLines(self,lines):
+        #returns a list of all of the values from the cfg file
+        nlines = removeSubModules(lines)
+        d = linesToDict(nlines)
+        return d
         
-     
+    def mapDictToAttr(self,d):
+        if 'name' in d:
+            self.name = d['name']
 
-
-            
-
-                
     
-    def __repr__(self):
-        return 'stuff'
-
 
 if __name__=='__main__':
-    parts = {}
-    for d in os.listdir(pfn):
-        fn = '//'.join((pfn,d,'part.cfg'))
-        print(fn)
-        readPartFile(fn)
+    parts = []
+    for root,dirs,files in os.walk(pfn):
+        if 'part.cfg' in files:
+
+            fn = os.path.join(root,'part.cfg')
+            parts.append(readPartFile(fn))
+            
+            
+            
+#         for name in files:
+#             fn = os.path.join(root,name)
+#         
+#             fn = os.path.join(root,files)
+#             parts.append(readPartFile(fn))
+            
+        
+#     
+#     os.path.join(pfn,dir)
+#     
+#     
+#     topdir = pfn
+#     topdir = os.path.join(pfn,'*.cfg')
+# 
+#         
+#     
+#     parts = []
+#     for d in os.listdir(pfn):
+#   
+#         fn = '//'.join((pfn,d,'part.cfg'))
+#         parts.append(readPartFile(fn))
+#         
+
+        
+
+    
+    print('done reading files')
+        #break
         
         
 
