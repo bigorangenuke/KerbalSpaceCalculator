@@ -14,6 +14,7 @@ class ModuleType(Enum):
     PROPELLANT = 3
     GENERIC = 4
     ENGINE = 5
+    SCIENCE = 6
 
 #find the curly braces in the part.cfg file
 def findModules(lines):
@@ -193,6 +194,7 @@ def readPartFile(partFile):
         elif 'MODULE' in mt:
             moduleType = ModuleType.MODULE
             nm = Module(mln,ix=m)
+
         else:
             moduleType = ModuleType.GENERIC
             nm = GenericModule(mln,ix=m)
@@ -346,36 +348,20 @@ class Part(Asset):
 
 if __name__=='__main__':
     parts = []
+    
+#     
+#     fn = os.path.join(pfn,'Command','probeCoreHex','part.cfg')
+#     print(fn)
+#     readPartFile(fn)
+#  
+#      
     for root,dirs,files in os.walk(pfn):
         if 'part.cfg' in files:
-
+ 
             fn = os.path.join(root,'part.cfg')
             parts.append(readPartFile(fn))
-            
-            
-            
-#         for name in files:
-#             fn = os.path.join(root,name)
-#         
-#             fn = os.path.join(root,files)
-#             parts.append(readPartFile(fn))
-            
-        
-#     
-#     os.path.join(pfn,dir)
-#     
-#     
-#     topdir = pfn
-#     topdir = os.path.join(pfn,'*.cfg')
-# 
-#         
-#     
-#     parts = []
-#     for d in os.listdir(pfn):
-#   
-#         fn = '//'.join((pfn,d,'part.cfg'))
-#         parts.append(readPartFile(fn))
-#         
+             
+
 
         
 
