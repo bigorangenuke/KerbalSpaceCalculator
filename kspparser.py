@@ -50,9 +50,13 @@ def readResourceFiles():
     print(rsrcs)
     
     for r in rsrcs:
-        print(r)
-        d = linesToDict(r)
-   
+        lines = [line.split('=') for line in r if '=' in line]
+        for line in lines:
+            for e in line:
+                e.strip()
+        
+        d = linesToDict(lines)
+        print(lines)
         
             
     

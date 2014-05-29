@@ -5,12 +5,17 @@ import units
 class AntennaType(Enum):
     ReflectronDP10 = 0
     Communotron16 = 1
+    Communotron32 = 2
+
 
 class Antenna():
     def __init__(self,AntType):
         self.type = AntType
         
         rng = [0,2.5e6]
+        
+        
+        rng = [0,5.0e6]
         energy = [0.13]
         
         if self.type == AntennaType.Communotron16:
@@ -125,14 +130,14 @@ class Constellation():
         
 if __name__=='__main__':
 
-    kerbin = ksp.Body('kerbin')
+    kerbin = ksp.Body('vall')
     
     sats = Constellation(kerbin,3)
-    dx = sats.distanceBetween(750000)
-    print(dx)
-    dx = units.cdist(dx,'m','km')
-
-    
+#     
+#     print(dx)
+#     dx = units.cdist(dx,'m','km')
+# 
+#     
 
 
 
